@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pass Generator - Freshie Fest 2026</title>
+  <meta name="description" content="Generate and issue unique QR entry passes for Freshie Fest 2026">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
+</head>
+<body>
+
+  <main class="container" style="padding-top: 32px; padding-bottom: 60px;">
+    
+    <div class="flex-between" style="margin-bottom: 24px; flex-wrap: wrap;">
+      <div>
+        <h1 style="font-size: 1.8rem; font-weight: 800; display: flex; align-items: center; gap: 10px;">
+          <span>🎫</span> Attendee Pass Generator
+        </h1>
+        <p style="color: var(--text-muted); font-size: 0.95rem; margin-top: 4px;">
+          Issue verified QR entry passes after confirming manual payment.
+        </p>
+      </div>
+      <div style="display: flex; gap: 10px; align-items: center;">
+        <span class="badge badge-info">🔒 Protected with Admin Code</span>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <!-- Left Column: Generator Form -->
+      <div>
+        <div class="card card-glass">
+          <div class="card-header">
+            <div class="card-title"><span>📝</span> Attendee Details</div>
+            <div style="font-size: 0.8rem; color: var(--text-dim);">Step 1 of 2</div>
+          </div>
+
+          <form id="pass-form" onsubmit="handleFormSubmit(event)">
+            <!-- Admin Code Field -->
+            <div class="form-group">
+              <label class="form-label" for="admin-code">
+                Admin Code <span class="required">*</span>
+              </label>
+              <div class="input-with-icon">
+                <span class="input-icon">🔑</span>
+                <input type="password" id="admin-code" class="form-input" placeholder="Enter secret admin code" required>
+              </div>
+              <div class="form-hint">Sent to the API to verify organizer authorization.</div>
+            </div>
+
+            <!-- Attendee Name -->
+            <div class="form-group">
+              <label class="form-label" for="attendee-name">
+                Attendee Full Name <span class="required">*</span>
+              </label>
+              <div class="input-with-icon">
+                <span class="input-icon">👤</span>
+                <input type="text" id="attendee-name" class="form-input" placeholder="e.g. Alex Rivera" required autocomplete="off">
+              </div>
+            </div>
+
+            <!-- Attendee Email -->
+            <div class="form-group">
+              <label class="form-label" for="attendee-email">
+                Email Address <span style="font-size: 0.78rem; color: var(--text-dim);">(Optional for auto-email)</span>
+              </label>
+              <div class="input-with-icon">
+                <span class="input-icon">✉️</span>
+                <input type="email" id="attendee-email" class="form-input" placeholder="e.g. alex.rivera@gmail.com">
+              </div>
+              <div class="form-hint">Google Apps Script will automatically email the QR pass if provided.</div>
+            </div>
+
+            <!-- Attendee WhatsApp -->
+            <div class="form-group">
+              <label class="form-label" for="attendee-whatsapp">
+                WhatsApp Phone Number <span style="font-size: 0.78rem; color: var(--text-dim);">(Optional for wa.me link)</span>
+              </label>
+              <div class="input-with-icon">
+                <span class="input-icon">💬</span>
+                <input type="tel" id="attendee-whatsapp" class="form-input" placeholder="e.g. +1 555 019 2834 (include country code)">
+              </div>
+              <div class="form-hint">Generates a 1-click WhatsApp deep link with pre-formatted message.</div>
+            </div>
+
+            <!-- Notes / Tags -->
+            <div class="form-group">
+              <label class="form-label" for="attendee-notes">
+                Notes / Reference <span style="font-size: 0.78rem; color: var(--text-dim);">(Optional)</span>
+              </label>
+              <input type="text" id="attendee-notes" class="form-input" placeholder="e.g. Paid via Bank Transfer #9842, VIP Table 4">
+            </div>
+
+            <button type="submit" id="btn-submit" class="btn btn-primary btn-lg btn-block" style="margin-top: 8px;">
+              <span>⚡</span> Generate Pass & Sync Sheet
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Right Column: Result Pass Preview & Quick Actions -->
+      <div>
+        <div id="empty-state" class="card" style="text-align: center; padding: 60px 24px; border-style: dashed;">
+          <div style="font-size: 54px; margin-bottom: 16px; opacity: 0.7;">🎫</div>
+          <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 8px;">Pass Preview Area</h3>
+          <p style="color: var(--text-muted); font-size: 0.9rem; max-width: 320px; margin: 0 auto 20px auto;">
+            Fill out the attendee details on the left and click <strong>Generate Pass</strong> to preview the official ticket, download the pass image, or send on WhatsApp.
+          </p>
+        </div>
+
+        <div id="result-container" style="display: none;">
+          <div class="ticket-container">
+            <div class="ticket-card" id="ticket-pass-card">
+              <div class="ticket-header">
+                <span class="ticket-badge">Verified Entry Pass</span>
+                <div class="ticket-event-name">FRESHIE FEST 2026</div>
+                <div class="ticket-event-details">📅 Sat, Oct 24 • 📍 Grand Arena</div>
+              </div>
+
+              <div class="ticket-body">
+                <div class="ticket-qr-box">
+                  <img id="ticket-qr-image" class="ticket-qr-img" src="" alt="QR Pass">
+                </div>
+                <div id="ticket-pass-id-display" class="ticket-pass-id">FF-XXXX-XXXX</div>
+                <div id="ticket-name-display" class="ticket-attendee-name">Guest Name</div>
+                <div id="ticket-notes-display" style="font-size: 0.8rem; color: var(--text-dim); margin-top: 4px;"></div>
+              </div>
+
+              <div class="ticket-divider">
+                <div class="ticket-dash"></div>
+              </div>
+
+              <div class="ticket-footer">
+                ⚡ Strictly valid for 1 entry. Present this QR at the entrance door.
+              </div>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="card" style="margin-top: 20px;">
+            <div class="card-title" style="font-size: 1rem; margin-bottom: 16px;">
+              <span>📤</span> Pass Delivery & Export Actions
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+              <a id="btn-whatsapp-send" href="#" target="_blank" class="btn btn-whatsapp btn-block" style="display: none;">
+                <span>💬</span> Open in WhatsApp (wa.me)
+              </a>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <button class="btn btn-secondary" onclick="downloadTicketImage()">
+                  <span>📥</span> Save Image
+                </button>
+                <button class="btn btn-secondary" onclick="window.print()">
+                  <span>🖨️</span> Print Pass
+                </button>
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <button class="btn btn-secondary" onclick="copyPassId()">
+                  <span>📋</span> Copy Pass ID
+                </button>
+                <button class="btn btn-secondary" onclick="copyWhatsAppMessage()">
+                  <span>💬</span> Copy Message
+                </button>
+              </div>
+
+              <button class="btn btn-primary" onclick="resetFormForNext()" style="margin-top: 8px;">
+                <span>➕</span> Issue Another Pass
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Passes Table -->
+    <section class="card" style="margin-top: 40px;">
+      <div class="card-header">
+        <div>
+          <div class="card-title"><span>📋</span> Issued Passes List</div>
+          <div class="card-subtitle">Instant lookup and delivery shortcuts</div>
+        </div>
+        <div style="display: flex; gap: 10px;">
+          <input type="text" id="pass-search" class="form-input" placeholder="Search passes..." style="max-width: 250px; padding: 8px 14px; font-size: 0.85rem;" oninput="filterPassesList()">
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="custom-table">
+          <thead>
+            <tr>
+              <th>Pass ID</th>
+              <th>Attendee Name</th>
+              <th>Email</th>
+              <th>WhatsApp</th>
+              <th>Status</th>
+              <th>Quick Actions</th>
+            </tr>
+          </thead>
+          <tbody id="passes-tbody">
+            <tr>
+              <td colspan="6" style="text-align: center; color: var(--text-dim); padding: 24px;">
+                Loading passes...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/api.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    let currentPassData = null;
+    let allPasses = [];
+
+    document.addEventListener('DOMContentLoaded', () => {
+      renderHeader('generate');
+      
+      // Auto-fill saved admin code from config/localStorage
+      const savedAdminCode = window.appConfig.get('ADMIN_CODE') || 'FRESHIE2026';
+      document.getElementById('admin-code').value = savedAdminCode;
+
+      loadPassesList();
+    });
+
+    async function handleFormSubmit(e) {
+      e.preventDefault();
+
+      const adminCode = document.getElementById('admin-code').value.trim();
+      const name = document.getElementById('attendee-name').value.trim();
+      const email = document.getElementById('attendee-email').value.trim();
+      const whatsapp = document.getElementById('attendee-whatsapp').value.trim();
+      const notes = document.getElementById('attendee-notes').value.trim();
+
+      if (!adminCode) {
+        showToast('Please enter the Admin Code.', 'warning');
+        return;
+      }
+      if (!name) {
+        showToast('Please enter attendee name.', 'warning');
+        return;
+      }
+
+      // Save Admin Code for user convenience
+      window.appConfig.set('ADMIN_CODE', adminCode);
+
+      const btn = document.getElementById('btn-submit');
+      const originalText = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '<span>⏳</span> Issuing Pass & Updating Sheet...';
+
+      try {
+        const res = await window.apiClient.generatePass({
+          name,
+          email,
+          whatsapp,
+          notes
+        }, adminCode);
+
+        if (res && res.success) {
+          currentPassData = res;
+          displayPassResult(res);
+          showToast(`Pass created for ${name}!`, 'success');
+          loadPassesList();
+        } else {
+          showToast(res.error || 'Failed to generate pass.', 'error');
+        }
+      } catch (err) {
+        console.error(err);
+        showToast(err.message || 'Error communicating with server.', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+      }
+    }
+
+    function displayPassResult(data) {
+      document.getElementById('empty-state').style.display = 'none';
+      const container = document.getElementById('result-container');
+      container.style.display = 'block';
+
+      document.getElementById('ticket-pass-id-display').textContent = data.passId;
+      document.getElementById('ticket-name-display').textContent = data.name;
+      document.getElementById('ticket-qr-image').src = data.qrUrl;
+
+      const notesEl = document.getElementById('ticket-notes-display');
+      if (data.notes) {
+        notesEl.textContent = data.notes;
+        notesEl.style.display = 'block';
+      } else {
+        notesEl.style.display = 'none';
+      }
+
+      // WhatsApp Button
+      const waBtn = document.getElementById('btn-whatsapp-send');
+      if (data.whatsappLink) {
+        waBtn.href = data.whatsappLink;
+        waBtn.style.display = 'inline-flex';
+      } else {
+        waBtn.style.display = 'none';
+      }
+
+      // Scroll into view on mobile
+      if (window.innerWidth < 768) {
+        container.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+
+    function resetFormForNext() {
+      document.getElementById('attendee-name').value = '';
+      document.getElementById('attendee-email').value = '';
+      document.getElementById('attendee-whatsapp').value = '';
+      document.getElementById('attendee-notes').value = '';
+      document.getElementById('attendee-name').focus();
+    }
+
+    function copyPassId() {
+      if (!currentPassData) return;
+      navigator.clipboard.writeText(currentPassData.passId);
+      showToast('Pass ID copied to clipboard!', 'success');
+    }
+
+    function copyWhatsAppMessage() {
+      if (!currentPassData) return;
+      const eventName = window.appConfig.get('EVENT_NAME');
+      const eventDate = window.appConfig.get('EVENT_DATE');
+      const eventVenue = window.appConfig.get('EVENT_VENUE');
+
+      const msg = 
+        `🎉 Hello ${currentPassData.name}!\n\n` +
+        `Your entry pass for *${eventName}* is confirmed!\n\n` +
+        `🎫 *Pass ID:* ${currentPassData.passId}\n` +
+        `📅 *Date:* ${eventDate}\n` +
+        `📍 *Venue:* ${eventVenue}\n\n` +
+        `⚠️ Important: Please present your QR code pass attached in this chat at the door for entry. Each QR pass is valid for 1 entry only.\n\n` +
+        `See you there! 🚀`;
+
+      navigator.clipboard.writeText(msg);
+      showToast('WhatsApp message copied to clipboard!', 'success');
+    }
+
+    function downloadTicketImage() {
+      if (!currentPassData) return;
+      
+      // Draw canvas ticket representation
+      const canvas = document.createElement('canvas');
+      canvas.width = 600;
+      canvas.height = 800;
+      const ctx = canvas.getContext('2d');
+
+      // Background
+      ctx.fillStyle = '#0f1322';
+      ctx.fillRect(0, 0, 600, 800);
+
+      // Top Gradient bar
+      const grad = ctx.createLinearGradient(0, 0, 600, 0);
+      grad.addColorStop(0, '#8b5cf6');
+      grad.addColorStop(0.5, '#ec4899');
+      grad.addColorStop(1, '#f43f5e');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, 600, 12);
+
+      // Header Text
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 36px Outfit, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('FRESHIE FEST 2026', 300, 70);
+
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '18px Outfit, sans-serif';
+      ctx.fillText('Official Entry Pass • 📅 Sat, Oct 24 • 📍 Grand Arena', 300, 105);
+
+      // QR Code Image
+      const qrImg = new Image();
+      qrImg.crossOrigin = 'Anonymous';
+      qrImg.onload = () => {
+        // Draw White Box
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.roundRect(140, 140, 320, 320, 20);
+        ctx.fill();
+
+        ctx.drawImage(qrImg, 160, 160, 280, 280);
+
+        // Pass ID
+        ctx.fillStyle = '#38bdf8';
+        ctx.font = 'bold 28px monospace';
+        ctx.fillText(currentPassData.passId, 300, 510);
+
+        // Attendee Name
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 32px Outfit, sans-serif';
+        ctx.fillText(currentPassData.name, 300, 560);
+
+        // Divider Line
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+        ctx.setLineDash([8, 6]);
+        ctx.beginPath();
+        ctx.moveTo(50, 620);
+        ctx.lineTo(550, 620);
+        ctx.stroke();
+
+        // Instructions Footer
+        ctx.setLineDash([]);
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '16px Outfit, sans-serif';
+        ctx.fillText('⚡ Strictly valid for 1 entry. Present at the entrance door.', 300, 680);
+        ctx.fillText('Organized by Freshie Fest Team', 300, 720);
+
+        // Download trigger
+        const link = document.createElement('a');
+        link.download = `FreshieFest_Pass_${currentPassData.passId}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+        showToast('Ticket image downloaded!', 'success');
+      };
+      qrImg.src = currentPassData.qrUrl;
+    }
+
+    async function loadPassesList() {
+      const adminCode = window.appConfig.get('ADMIN_CODE') || 'FRESHIE2026';
+      try {
+        const res = await window.apiClient.getPasses('', adminCode);
+        if (res && res.success) {
+          allPasses = res.passes || res.recentPasses || [];
+          renderPassesTable(allPasses);
+        }
+      } catch (e) {
+        console.warn('Could not load passes list:', e);
+      }
+    }
+
+    function renderPassesTable(passes) {
+      const tbody = document.getElementById('passes-tbody');
+      if (!tbody) return;
+
+      if (!passes || passes.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="6" style="text-align: center; color: var(--text-dim); padding: 24px;">
+              No passes found. Generate a pass using the form above!
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = passes.map(p => {
+        const isUsed = p.status === 'used';
+        const badgeClass = isUsed ? 'badge-success' : 'badge-warning';
+        const badgeText = isUsed ? '✅ Used' : '⏳ Unused';
+        
+        let waBtn = '-';
+        if (p.whatsapp) {
+          const cleanPhone = String(p.whatsapp).replace(/[^0-9]/g, '');
+          const waUrl = `https://wa.me/${cleanPhone}`;
+          waBtn = `<a href="${waUrl}" target="_blank" class="btn btn-whatsapp" style="padding: 4px 10px; font-size: 0.75rem;">💬 WhatsApp</a>`;
+        }
+
+        return `
+          <tr>
+            <td style="font-family: var(--font-mono); font-weight: 700; color: #38bdf8;">${escapeHtml(p.passId)}</td>
+            <td style="font-weight: 600;">${escapeHtml(p.name)}</td>
+            <td style="color: var(--text-muted); font-size: 0.85rem;">${escapeHtml(p.email || '-')}</td>
+            <td style="color: var(--text-muted); font-size: 0.85rem;">${escapeHtml(p.whatsapp || '-')}</td>
+            <td><span class="badge ${badgeClass}">${badgeText}</span></td>
+            <td>
+              <div style="display: flex; gap: 6px;">
+                ${waBtn}
+                <button class="btn btn-secondary" style="padding: 4px 8px; font-size: 0.75rem;" onclick="copySinglePassId('${escapeHtml(p.passId)}')">📋 ID</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function filterPassesList() {
+      const q = document.getElementById('pass-search').value.toLowerCase().trim();
+      if (!q) {
+        renderPassesTable(allPasses);
+        return;
+      }
+      const filtered = allPasses.filter(p => 
+        p.name.toLowerCase().includes(q) || 
+        p.passId.toLowerCase().includes(q) || 
+        (p.email && p.email.toLowerCase().includes(q)) ||
+        (p.whatsapp && p.whatsapp.includes(q))
+      );
+      renderPassesTable(filtered);
+    }
+
+    function copySinglePassId(id) {
+      navigator.clipboard.writeText(id);
+      showToast(`Copied ${id} to clipboard!`, 'success');
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+  </script>
+</body>
+</html>

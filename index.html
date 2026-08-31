@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Freshie Fest 2026 - Event Pass Hub & Live Check-in</title>
+  <meta name="description" content="Serverless QR Pass Generation and Real-Time Door Scanning for Freshie Fest 2026">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
+</head>
+<body>
+
+  <main class="container" style="padding-bottom: 60px;">
+    <!-- Hero Section -->
+    <section class="hero-section">
+      <div class="hero-badge">
+        <span>⚡</span> Freshie Fest 2026 Official Ticketing
+      </div>
+      <h1 class="hero-title">
+        Instant QR Pass System & <span class="gradient-text">Live Door Scanner</span>
+      </h1>
+      <p class="hero-desc">
+        Lightweight, serverless event ticketing for ~150 attendees powered by Google Sheets. Issue passes with 1-click email & WhatsApp delivery, and scan live at the door with zero app installs.
+      </p>
+
+      <div class="hero-actions">
+        <a href="generate.html" class="btn btn-primary btn-lg">
+          <span>🎫</span> Generate Attendee Pass
+        </a>
+        <a href="scan.html" class="btn btn-secondary btn-lg">
+          <span>📷</span> Open Door Scanner
+        </a>
+        <button class="btn btn-secondary btn-lg" onclick="openSettingsModal()">
+          <span>⚙️</span> API Setup
+        </button>
+      </div>
+    </section>
+
+    <!-- Real-time Stats Grid -->
+    <section style="margin-top: 10px; margin-bottom: 40px;">
+      <div class="flex-between" style="margin-bottom: 16px;">
+        <h2 style="font-size: 1.25rem; font-weight: 700; display: flex; align-items: center; gap: 8px;">
+          <span>📊</span> Live Event Metrics
+        </h2>
+        <button class="btn btn-secondary" onclick="fetchLiveStats()" style="padding: 6px 14px; font-size: 0.85rem;">
+          <span>🔄</span> Refresh
+        </button>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon purple">🎫</div>
+          <div>
+            <div id="stat-total" class="stat-val">--</div>
+            <div class="stat-label">Total Passes Issued</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon green">✅</div>
+          <div>
+            <div id="stat-scanned" class="stat-val">--</div>
+            <div class="stat-label">Checked-in at Door</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon cyan">⏳</div>
+          <div>
+            <div id="stat-unused" class="stat-val">--</div>
+            <div class="stat-label">Pending Arrival</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon pink">📈</div>
+          <div>
+            <div id="stat-percent" class="stat-val">--%</div>
+            <div class="stat-label">Attendance Rate</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Role Quick Guides -->
+    <section class="grid-2" style="margin-bottom: 40px;">
+      <!-- Organizer Card -->
+      <div class="card card-glass">
+        <div class="card-header">
+          <div class="card-title">
+            <span>👑</span> Organizer Workflow
+          </div>
+          <span class="badge badge-info">Admin Code Protected</span>
+        </div>
+        <ol style="padding-left: 20px; color: var(--text-muted); font-size: 0.95rem; display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px;">
+          <li>Verify attendee's manual bank transfer / screenshot payment.</li>
+          <li>Open the <strong>Pass Generator</strong> and enter their Name, Email, and WhatsApp.</li>
+          <li>Pass is recorded in Google Sheets, QR is automatically emailed, and a pre-filled WhatsApp link is generated.</li>
+          <li>Click the WhatsApp link and attach the generated ticket image to notify the attendee instantly!</li>
+        </ol>
+        <a href="generate.html" class="btn btn-primary btn-block">
+          <span>🚀</span> Open Generator Page
+        </a>
+      </div>
+
+      <!-- Door Staff Card -->
+      <div class="card card-glass">
+        <div class="card-header">
+          <div class="card-title">
+            <span>📱</span> Door Staff Workflow
+          </div>
+          <span class="badge badge-success">Zero Login Needed</span>
+        </div>
+        <ol style="padding-left: 20px; color: var(--text-muted); font-size: 0.95rem; display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px;">
+          <li>Open the <strong>Door Scanner</strong> URL on any smartphone browser (iOS or Android).</li>
+          <li>Allow browser camera permission when prompted.</li>
+          <li>Point camera at the attendee's QR pass (digital on phone or printed).</li>
+          <li>System gives instant audio, haptic, and visual feedback (Valid / Already Used / Invalid) and records timestamps live in Google Sheets.</li>
+        </ol>
+        <a href="scan.html" class="btn btn-secondary btn-block">
+          <span>📷</span> Open Scanner Page
+        </a>
+      </div>
+    </section>
+
+    <!-- Recent Passes Activity Table -->
+    <section class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title"><span>📋</span> Recent Attendee Activity</div>
+          <div class="card-subtitle">Live sync from Google Sheets</div>
+        </div>
+        <div style="display: flex; gap: 10px;">
+          <input type="text" id="table-search" class="form-input" placeholder="Search by name or pass ID..." style="max-width: 250px; padding: 8px 14px; font-size: 0.85rem;" oninput="filterRecentTable()">
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="custom-table">
+          <thead>
+            <tr>
+              <th>Pass ID</th>
+              <th>Attendee Name</th>
+              <th>Status</th>
+              <th>Created At</th>
+              <th>Scanned At</th>
+            </tr>
+          </thead>
+          <tbody id="recent-passes-tbody">
+            <tr>
+              <td colspan="5" style="text-align: center; color: var(--text-dim); padding: 30px;">
+                Loading attendee data...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/api.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script>
+    let allRecentPasses = [];
+
+    document.addEventListener('DOMContentLoaded', () => {
+      renderHeader('hub');
+      fetchLiveStats();
+    });
+
+    window.refreshDashboardStats = fetchLiveStats;
+
+    async function fetchLiveStats() {
+      const totalEl = document.getElementById('stat-total');
+      const scannedEl = document.getElementById('stat-scanned');
+      const unusedEl = document.getElementById('stat-unused');
+      const percentEl = document.getElementById('stat-percent');
+      const tbody = document.getElementById('recent-passes-tbody');
+
+      try {
+        const adminCode = window.appConfig.get('ADMIN_CODE') || 'FRESHIE2026';
+        const res = await window.apiClient.getStats(adminCode);
+
+        if (res && res.success) {
+          totalEl.textContent = res.totalPasses;
+          scannedEl.textContent = res.scannedPasses;
+          unusedEl.textContent = res.unusedPasses;
+          percentEl.textContent = `${res.scannedPercentage}%`;
+
+          allRecentPasses = res.recentPasses || [];
+          renderRecentTable(allRecentPasses);
+        } else {
+          totalEl.textContent = '0';
+          scannedEl.textContent = '0';
+          unusedEl.textContent = '0';
+          percentEl.textContent = '0%';
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="5" style="text-align: center; color: var(--danger); padding: 20px;">
+                ${res.error || 'Could not load data. Check API settings.'}
+              </td>
+            </tr>
+          `;
+        }
+      } catch (err) {
+        console.error(err);
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="5" style="text-align: center; color: var(--danger); padding: 20px;">
+              Error connecting to API. Click ⚙️ Settings above to configure.
+            </td>
+          </tr>
+        `;
+      }
+    }
+
+    function renderRecentTable(passes) {
+      const tbody = document.getElementById('recent-passes-tbody');
+      if (!tbody) return;
+
+      if (!passes || passes.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="5" style="text-align: center; color: var(--text-dim); padding: 30px;">
+              No passes generated yet. Click "Generate Attendee Pass" above to create one!
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = passes.slice(0, 15).map(p => {
+        const isUsed = p.status === 'used';
+        const badgeClass = isUsed ? 'badge-success' : 'badge-warning';
+        const badgeText = isUsed ? '✅ Used (Scanned)' : '⏳ Unused';
+        const createdDate = p.createdAt ? new Date(p.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', month: 'short', day: 'numeric' }) : '-';
+        const scannedDate = p.scannedAt ? new Date(p.scannedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', month: 'short', day: 'numeric' }) : '-';
+
+        return `
+          <tr>
+            <td style="font-family: var(--font-mono); font-weight: 700; color: #38bdf8;">${escapeHtml(p.passId)}</td>
+            <td style="font-weight: 600;">${escapeHtml(p.name)}</td>
+            <td><span class="badge ${badgeClass}">${badgeText}</span></td>
+            <td style="color: var(--text-dim); font-size: 0.82rem;">${createdDate}</td>
+            <td style="color: var(--text-dim); font-size: 0.82rem;">${scannedDate}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function filterRecentTable() {
+      const q = document.getElementById('table-search').value.toLowerCase().trim();
+      if (!q) {
+        renderRecentTable(allRecentPasses);
+        return;
+      }
+      const filtered = allRecentPasses.filter(p => 
+        p.name.toLowerCase().includes(q) || 
+        p.passId.toLowerCase().includes(q) || 
+        (p.email && p.email.toLowerCase().includes(q))
+      );
+      renderRecentTable(filtered);
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+  </script>
+</body>
+</html>
