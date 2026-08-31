@@ -473,6 +473,7 @@ function sendPassEmail(name, rollNo, amount, email, passId, qrUrl) {
 
     var mailOptions = {
       to: email,
+      name: CONFIG.PRESENTER + ' — ' + CONFIG.EVENT_NAME,
       subject: subject,
       htmlBody: htmlBody
     };
