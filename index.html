@@ -3,53 +3,53 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>The Last Soiree / Welcome Party 2026 - Pass Hub & Check-in</title>
-  <meta name="description" content="CSIT Juniors & Seniors Presents The Last Soiree / Welcome Party 2026 Ticketing & Door Check-in">
+  <title>Event Operations Dashboard - CSIT Annual Gala 2026</title>
+  <meta name="description" content="Operations Dashboard and Live Gate Check-in Management System">
   <link rel="stylesheet" href="assets/css/style.css">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✨</text></svg>">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%232563eb%22/><text y=%22.7em%22 x=%22.25em%22 font-size=%2260%22 font-weight=%22bold%22 fill=%22white%22>CS</text></svg>">
 </head>
 <body>
 
   <main class="container" style="padding-bottom: 60px;">
-    <!-- Hero Section -->
+    <!-- Hero / Header Section -->
     <section class="hero-section">
       <div class="hero-badge">
-        <span>✨</span> CSIT JUNIORS & SENIORS PRESENTS 2026
+        <span>●</span> Event Operations & Ticketing Management
       </div>
       <h1 class="hero-title">
-        The Last Soiree & <span class="gradient-royal-text">Welcome Party Portal</span>
+        CSIT Annual Gala & Welcome Party 2026
       </h1>
       <p class="hero-desc">
-        Official serverless entry ticketing and live door scanning system. Issue verified VIP QR passes with instant automated email delivery and validate guest check-ins in real-time.
+        Serverless pass issuance and real-time door admission system. Issue digital QR passes with instant automated email confirmation and monitor live gate check-in flow.
       </p>
 
       <div class="hero-actions">
         <a href="generate.html" class="btn btn-primary btn-lg">
-          <span>🎫</span> Generate VIP Pass
+          Pass Generator
         </a>
         <a href="scan.html" class="btn btn-secondary btn-lg">
-          <span>📷</span> Open Door Scanner
+          Door Scanner
         </a>
         <button class="btn btn-secondary btn-lg" onclick="openSettingsModal()">
-          <span>⚙️</span> API Setup
+          API Configuration
         </button>
       </div>
     </section>
 
-    <!-- Real-time Stats Grid -->
-    <section style="margin-top: 10px; margin-bottom: 40px;">
-      <div class="flex-between" style="margin-bottom: 16px;">
-        <h2 style="font-size: 1.25rem; font-weight: 700; display: flex; align-items: center; gap: 8px;">
-          <span>📊</span> Real-Time Check-in Metrics
+    <!-- Key Performance Metrics Grid -->
+    <section style="margin-bottom: 32px;">
+      <div class="flex-between" style="margin-bottom: 14px;">
+        <h2 style="font-size: 1.1rem; font-weight: 700; color: var(--text-main);">
+          Gate Check-in Summary
         </h2>
-        <button class="btn btn-secondary" onclick="fetchLiveStats()" style="padding: 6px 14px; font-size: 0.85rem;">
-          <span>🔄</span> Refresh Stats
+        <button class="btn btn-secondary" onclick="fetchLiveStats()" style="padding: 5px 12px; font-size: 0.8rem;">
+          Refresh Data
         </button>
       </div>
 
       <div class="stats-grid">
         <div class="stat-card">
-          <div class="stat-icon blue">🎫</div>
+          <div class="stat-icon blue">🪪</div>
           <div>
             <div id="stat-total" class="stat-val">--</div>
             <div class="stat-label">Total Passes Issued</div>
@@ -57,15 +57,15 @@
         </div>
 
         <div class="stat-card">
-          <div class="stat-icon green">✅</div>
+          <div class="stat-icon green">✓</div>
           <div>
             <div id="stat-scanned" class="stat-val">--</div>
-            <div class="stat-label">Checked-in at Door</div>
+            <div class="stat-label">Checked-in Attendees</div>
           </div>
         </div>
 
         <div class="stat-card">
-          <div class="stat-icon purple">⏳</div>
+          <div class="stat-icon slate">⏳</div>
           <div>
             <div id="stat-unused" class="stat-val">--</div>
             <div class="stat-label">Pending Arrival</div>
@@ -73,7 +73,7 @@
         </div>
 
         <div class="stat-card">
-          <div class="stat-icon pink">📈</div>
+          <div class="stat-icon purple">%</div>
           <div>
             <div id="stat-percent" class="stat-val">--%</div>
             <div class="stat-label">Attendance Rate</div>
@@ -82,56 +82,52 @@
       </div>
     </section>
 
-    <!-- Role Quick Guides -->
-    <section class="grid-2" style="margin-bottom: 40px;">
-      <!-- Organizer Card -->
-      <div class="card card-glass">
+    <!-- Operational Workflow Cards -->
+    <section class="grid-2" style="margin-bottom: 36px;">
+      <!-- Organizer Workflow -->
+      <div class="card">
         <div class="card-header">
-          <div class="card-title">
-            <span>👑</span> Organizer Workflow
-          </div>
+          <div class="card-title">Pass Issuance Workflow</div>
           <span class="badge badge-info">Admin Code Protected</span>
         </div>
-        <ol style="padding-left: 20px; color: var(--text-muted); font-size: 0.95rem; display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px;">
-          <li>Confirm attendee's manual payment (bank transfer / screenshot).</li>
-          <li>Open the <strong>Pass Generator</strong> and enter their Name, Roll No, Batch, Email, and WhatsApp.</li>
-          <li>The system generates their unique Pass ID (`#LSAD26-XXX`), writes to Google Sheet, and **automatically emails their QR pass**.</li>
-          <li>Optionally click the WhatsApp deep link to send the pass card on WhatsApp.</li>
+        <ol style="padding-left: 18px; color: var(--text-secondary); font-size: 0.88rem; display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
+          <li>Verify attendee's registration and manual payment transfer.</li>
+          <li>Open the <strong>Pass Generator</strong> and record their Name, Roll Number, Batch, and Email.</li>
+          <li>System registers the attendee in Google Sheets and <strong>automatically emails their QR pass</strong>.</li>
+          <li>Optionally trigger WhatsApp message dispatch via pre-filled link.</li>
         </ol>
         <a href="generate.html" class="btn btn-primary btn-block">
-          <span>🚀</span> Open Generator Page
+          Open Pass Generator
         </a>
       </div>
 
-      <!-- Door Staff Card -->
-      <div class="card card-glass">
+      <!-- Door Staff Workflow -->
+      <div class="card">
         <div class="card-header">
-          <div class="card-title">
-            <span>📱</span> Door Staff Workflow
-          </div>
-          <span class="badge badge-success">Zero Login Needed</span>
+          <div class="card-title">Door Verification Workflow</div>
+          <span class="badge badge-success">No App Install Needed</span>
         </div>
-        <ol style="padding-left: 20px; color: var(--text-muted); font-size: 0.95rem; display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px;">
-          <li>Door staff open the <strong>Door Scanner</strong> URL on their phone browser.</li>
-          <li>Allow camera permission and point at attendee's QR code.</li>
-          <li>Instant audio, haptic, and visual feedback confirms Name, Roll No, and Valid/Used status.</li>
-          <li>Live concurrency locking prevents duplicate entry across multiple doors.</li>
+        <ol style="padding-left: 18px; color: var(--text-secondary); font-size: 0.88rem; display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
+          <li>Gate staff access the <strong>Door Scanner</strong> URL on mobile or tablet.</li>
+          <li>Grant browser camera permission and scan attendee's digital/printed QR code.</li>
+          <li>Instant verification validates Pass ID, Name, and Roll Number against the live database.</li>
+          <li>Concurrency locking prevents duplicate entry across multiple gates.</li>
         </ol>
         <a href="scan.html" class="btn btn-secondary btn-block">
-          <span>📷</span> Open Scanner Page
+          Open Gate Scanner
         </a>
       </div>
     </section>
 
-    <!-- Recent Passes Activity Table -->
+    <!-- Live Activity Log -->
     <section class="card">
       <div class="card-header">
         <div>
-          <div class="card-title"><span>📋</span> Live Attendee Check-in Feed</div>
-          <div class="card-subtitle">Real-time sync from Google Sheets</div>
+          <div class="card-title">Live Gate Activity Feed</div>
+          <div class="card-subtitle">Real-time synchronized data from Google Sheets</div>
         </div>
-        <div style="display: flex; gap: 10px;">
-          <input type="text" id="table-search" class="form-input" placeholder="Search by name, roll no, pass ID..." style="max-width: 280px; padding: 8px 14px; font-size: 0.85rem;" oninput="filterRecentTable()">
+        <div>
+          <input type="text" id="table-search" class="form-input" placeholder="Search by name, roll no, pass ID..." style="max-width: 260px; padding: 6px 12px; font-size: 0.82rem;" oninput="filterRecentTable()">
         </div>
       </div>
 
@@ -141,16 +137,16 @@
             <tr>
               <th>Pass ID</th>
               <th>Attendee Name</th>
-              <th>Roll No</th>
-              <th>Batch</th>
+              <th>Roll Number</th>
+              <th>Department / Batch</th>
               <th>Status</th>
               <th>Scanned At</th>
             </tr>
           </thead>
           <tbody id="recent-passes-tbody">
             <tr>
-              <td colspan="6" style="text-align: center; color: var(--text-dim); padding: 30px;">
-                Loading attendee data...
+              <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 24px;">
+                Loading attendee records...
               </td>
             </tr>
           </tbody>
@@ -209,7 +205,7 @@
         tbody.innerHTML = `
           <tr>
             <td colspan="6" style="text-align: center; color: var(--danger); padding: 20px;">
-              Error connecting to API. Click ⚙️ Settings above to configure.
+              Error connecting to API. Click API Configuration to verify endpoint URL.
             </td>
           </tr>
         `;
@@ -223,8 +219,8 @@
       if (!passes || passes.length === 0) {
         tbody.innerHTML = `
           <tr>
-            <td colspan="6" style="text-align: center; color: var(--text-dim); padding: 30px;">
-              No passes generated yet. Click "Generate VIP Pass" above to create one!
+            <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 24px;">
+              No passes generated yet. Click "Pass Generator" above to issue one.
             </td>
           </tr>
         `;
@@ -234,17 +230,17 @@
       tbody.innerHTML = passes.slice(0, 15).map(p => {
         const isUsed = p.status === 'used';
         const badgeClass = isUsed ? 'badge-success' : 'badge-warning';
-        const badgeText = isUsed ? '✅ Scanned (Used)' : '⏳ Pending (Unused)';
+        const badgeText = isUsed ? 'Used' : 'Unused';
         const scannedDate = p.scannedAt ? new Date(p.scannedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', month: 'short', day: 'numeric' }) : '-';
 
         return `
           <tr>
-            <td style="font-family: var(--font-mono); font-weight: 700; color: #93c5fd;">${escapeHtml(p.passId)}</td>
-            <td style="font-weight: 700;">${escapeHtml(p.name)}</td>
-            <td style="font-family: var(--font-mono); color: #60a5fa; font-weight: 600;">${escapeHtml(p.rollNo || '-')}</td>
+            <td style="font-family: var(--font-mono); font-weight: 700; color: #38bdf8;">${escapeHtml(p.passId)}</td>
+            <td style="font-weight: 600;">${escapeHtml(p.name)}</td>
+            <td style="font-family: var(--font-mono); color: var(--text-secondary); font-size: 0.85rem;">${escapeHtml(p.rollNo || '-')}</td>
             <td style="color: var(--text-muted); font-size: 0.85rem;">${escapeHtml(p.batch || '-')}</td>
             <td><span class="badge ${badgeClass}">${badgeText}</span></td>
-            <td style="color: var(--text-dim); font-size: 0.82rem;">${scannedDate}</td>
+            <td style="color: var(--text-muted); font-size: 0.82rem;">${scannedDate}</td>
           </tr>
         `;
       }).join('');

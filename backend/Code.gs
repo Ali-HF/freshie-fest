@@ -393,61 +393,68 @@ function sendPassEmail(name, rollNo, batch, category, email, passId, qrUrl) {
       Logger.log('Could not fetch QR blob: ' + fetchErr);
     }
 
-    var subject = '🎫 Official Entry Pass: ' + CONFIG.EVENT_NAME + ' [' + passId + ']';
+    var subject = 'Official Event Entry Credential: ' + CONFIG.EVENT_NAME + ' [' + passId + ']';
 
     var htmlBody = 
-      '<div style="font-family: \'Cinzel\', \'Georgia\', \'Segoe UI\', serif; max-width: 500px; margin: 0 auto; background: #030714; color: #f0f2f5; border-radius: 20px; overflow: hidden; border: 2px solid #3b82f6; box-shadow: 0 15px 35px rgba(0,0,0,0.8);">' +
+      '<div style="font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, Helvetica, Arial, sans-serif; max-width: 540px; margin: 0 auto; background: #0f172a; color: #f8fafc; border-radius: 12px; overflow: hidden; border: 1px solid #1e293b; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">' +
         
-        '<!-- Royal Header -->' +
-        '<div style="background: radial-gradient(circle, #1d4ed8 0%, #030714 100%); padding: 28px 20px; text-align: center; border-bottom: 1px solid rgba(147, 197, 253, 0.3);">' +
-          '<div style="font-size: 11px; letter-spacing: 4px; color: #93c5fd; text-transform: uppercase; margin-bottom: 4px;">' + CONFIG.PRESENTER + '</div>' +
-          '<h1 style="margin: 0; color: #ffffff; font-size: 26px; font-style: italic; font-weight: bold; letter-spacing: 1px;">' + CONFIG.EVENT_NAME + '</h1>' +
-          '<div style="font-size: 11px; letter-spacing: 4px; color: #60a5fa; text-transform: uppercase; margin-top: 4px;">ANNUAL DINNER • ENTRY PASS</div>' +
+        '<!-- Header Accent Bar -->' +
+        '<div style="background: #2563eb; height: 6px; width: 100%;"></div>' +
+
+        '<!-- Header -->' +
+        '<div style="padding: 24px 24px 16px 24px; border-bottom: 1px solid #1e293b; background: #0b1120;">' +
+          '<div style="font-size: 11px; font-weight: 700; letter-spacing: 1px; color: #38bdf8; text-transform: uppercase; margin-bottom: 4px;">' + CONFIG.PRESENTER + '</div>' +
+          '<h1 style="margin: 0; color: #ffffff; font-size: 22px; font-weight: 800; letter-spacing: -0.3px;">' + CONFIG.EVENT_NAME + '</h1>' +
+          '<div style="font-size: 13px; color: #94a3b8; margin-top: 2px;">Official Entry Credential & Verification Pass</div>' +
         '</div>' +
 
-        '<div style="padding: 24px 20px; text-align: center;">' +
-          '<div style="background: rgba(13, 27, 62, 0.8); border: 1px solid rgba(147, 197, 253, 0.3); border-radius: 12px; padding: 10px; margin-bottom: 20px; display: inline-block; width: 85%;">' +
-            '<span style="font-size: 13px; color: #93c5fd; letter-spacing: 2px;">📅 <strong>' + CONFIG.EVENT_DATE + '</strong> &nbsp;|&nbsp; ⏰ <strong>' + CONFIG.EVENT_TIME + '</strong></span>' +
+        '<div style="padding: 24px;">' +
+          '<!-- Event Meta Box -->' +
+          '<div style="background: #1e293b; border-radius: 8px; padding: 12px 16px; margin-bottom: 20px; font-size: 13px; color: #cbd5e1; border: 1px solid rgba(148, 163, 184, 0.1);">' +
+            '<div style="margin-bottom: 4px;"><strong>Date & Time:</strong> ' + CONFIG.EVENT_DATE + ' • ' + CONFIG.EVENT_TIME + '</div>' +
+            '<div><strong>Venue:</strong> ' + CONFIG.EVENT_VENUE + '</div>' +
           '</div>' +
 
-          '<!-- QR Box -->' +
-          '<div style="background: #ffffff; padding: 14px; border-radius: 16px; display: inline-block; box-shadow: 0 4px 20px rgba(0,0,0,0.5); margin-bottom: 16px;">' +
-            '<img src="' + (qrBlob ? 'cid:qrInline' : qrUrl) + '" alt="QR Pass" style="width: 200px; height: 200px; display: block; margin: 0 auto;" />' +
-            '<div style="font-family: monospace; font-size: 18px; font-weight: bold; color: #0f172a; margin-top: 8px; letter-spacing: 2px;">' + passId + '</div>' +
-          '</div>' +
-
-          '<!-- Attendee Details -->' +
-          '<div style="background: #070d1e; border-radius: 12px; padding: 16px; text-align: left; margin-bottom: 20px; border: 1px solid rgba(147, 197, 253, 0.2);">' +
-            '<div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px;">' +
-              '<span style="color: #93c5fd; letter-spacing: 1px;">NAME:</span>' +
-              '<strong style="color: #ffffff; text-transform: uppercase;">' + name + '</strong>' +
+          '<!-- QR Pass Centerpiece -->' +
+          '<div style="text-align: center; margin-bottom: 20px;">' +
+            '<div style="background: #ffffff; padding: 14px; border-radius: 10px; display: inline-block; box-shadow: 0 4px 15px rgba(0,0,0,0.4);">' +
+              '<img src="' + (qrBlob ? 'cid:qrInline' : qrUrl) + '" alt="QR Pass" style="width: 180px; height: 180px; display: block; margin: 0 auto;" />' +
+              '<div style="font-family: monospace; font-size: 16px; font-weight: bold; color: #0f172a; margin-top: 8px; letter-spacing: 1px;">' + passId + '</div>' +
             '</div>' +
-            (rollNo ? 
-            '<div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px;">' +
-              '<span style="color: #93c5fd; letter-spacing: 1px;">ROLL NO:</span>' +
-              '<strong style="color: #93c5fd; font-family: monospace;">' + rollNo + '</strong>' +
-            '</div>' : '') +
-            (batch ? 
-            '<div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px;">' +
-              '<span style="color: #93c5fd; letter-spacing: 1px;">BATCH/DEPT:</span>' +
-              '<strong style="color: #cbd5e1;">' + batch + '</strong>' +
-            '</div>' : '') +
-            '<div style="display: flex; justify-content: space-between; font-size: 14px;">' +
-              '<span style="color: #93c5fd; letter-spacing: 1px;">VENUE:</span>' +
-              '<strong style="color: #cbd5e1;">' + CONFIG.EVENT_VENUE + '</strong>' +
-            '</div>' +
+            '<div style="font-size: 12px; color: #64748b; margin-top: 8px;">Present this QR code at the admission gate</div>' +
           '</div>' +
 
-          '<div style="font-size: 11px; color: #60a5fa; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px;">' +
-            CONFIG.EVENT_TAGLINE +
+          '<!-- Attendee Information -->' +
+          '<div style="background: #020617; border-radius: 8px; padding: 16px; border: 1px solid #1e293b; margin-bottom: 20px;">' +
+            '<table style="width: 100%; border-collapse: collapse; font-size: 13px;">' +
+              '<tr>' +
+                '<td style="padding: 6px 0; color: #64748b; font-weight: 600; width: 40%;">ATTENDEE NAME</td>' +
+                '<td style="padding: 6px 0; color: #ffffff; font-weight: 700; text-align: right;">' + name.toUpperCase() + '</td>' +
+              '</tr>' +
+              (rollNo ? 
+              '<tr>' +
+                '<td style="padding: 6px 0; color: #64748b; font-weight: 600;">ROLL NUMBER</td>' +
+                '<td style="padding: 6px 0; color: #38bdf8; font-weight: 700; font-family: monospace; text-align: right;">' + rollNo + '</td>' +
+              '</tr>' : '') +
+              (batch ? 
+              '<tr>' +
+                '<td style="padding: 6px 0; color: #64748b; font-weight: 600;">BATCH / DEPT</td>' +
+                '<td style="padding: 6px 0; color: #cbd5e1; text-align: right;">' + batch + '</td>' +
+              '</tr>' : '') +
+              '<tr>' +
+                '<td style="padding: 6px 0; color: #64748b; font-weight: 600;">CLASSIFICATION</td>' +
+                '<td style="padding: 6px 0; color: #2563eb; font-weight: 600; text-align: right;">' + (category || 'Standard Entry') + '</td>' +
+              '</tr>' +
+            '</table>' +
           '</div>' +
-          '<div style="font-size: 11px; color: #64748b;">' +
-            '⚡ Strictly valid for 1 entry. Please present this QR code at the entrance.' +
+
+          '<div style="font-size: 12px; color: #475569; text-align: center; line-height: 1.4;">' +
+            'This credential is tied to your registration and is strictly valid for single gate check-in.' +
           '</div>' +
         '</div>' +
 
-        '<div style="background: #02040a; padding: 12px; text-align: center; font-size: 11px; color: #475569; border-top: 1px solid rgba(147, 197, 253, 0.15);">' +
-          'Questions? Contact organizer at ' + CONFIG.ORGANIZER_CONTACT +
+        '<div style="background: #020617; padding: 14px 24px; text-align: center; font-size: 11px; color: #475569; border-top: 1px solid #1e293b;">' +
+          'Department of Computer Science & IT • Event Operations Support' +
         '</div>' +
       '</div>';
 

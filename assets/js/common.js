@@ -7,17 +7,17 @@ function renderHeader(activePage = 'hub') {
     <header class="header">
       <div class="container nav-wrapper">
         <a href="index.html" class="brand">
-          <div class="brand-icon">✨</div>
+          <div class="brand-icon">CS</div>
           <div class="brand-text">
-            CSIT 2026
-            <span>THE LAST SOIREE</span>
+            CSIT OPERATIONS
+            <span>TICKETING & GATE ADMISSION</span>
           </div>
         </a>
 
         <ul class="nav-links">
-          <li><a href="index.html" class="nav-link ${activePage === 'hub' ? 'active' : ''}">🏠 Hub</a></li>
-          <li><a href="generate.html" class="nav-link ${activePage === 'generate' ? 'active' : ''}">🎫 Generator</a></li>
-          <li><a href="scan.html" class="nav-link ${activePage === 'scan' ? 'active' : ''}">📷 Door Scanner</a></li>
+          <li><a href="index.html" class="nav-link ${activePage === 'hub' ? 'active' : ''}">Dashboard</a></li>
+          <li><a href="generate.html" class="nav-link ${activePage === 'generate' ? 'active' : ''}">Pass Generator</a></li>
+          <li><a href="scan.html" class="nav-link ${activePage === 'scan' ? 'active' : ''}">Gate Scanner</a></li>
         </ul>
 
         <div class="nav-actions">
