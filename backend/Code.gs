@@ -451,7 +451,7 @@ function sendPassEmail(name, email, passId, qrUrl) {
           '<p style="font-size: 14px; line-height: 1.5; color: #a0aec0; margin-bottom: 24px;">Your payment has been verified and your entry pass is confirmed! Present this QR code at the entrance.</p>' +
           
           '<div style="background: #ffffff; padding: 20px; border-radius: 16px; display: inline-block; box-shadow: 0 4px 15px rgba(0,0,0,0.3); margin-bottom: 20px;">' +
-            '<img src="' + qrUrl + '" alt="QR Pass" style="width: 220px; height: 220px; display: block; margin: 0 auto;" />' +
+            '<img src="' + (qrBlob ? 'cid:qrInline' : qrUrl) + '" alt="QR Pass" style="width: 220px; height: 220px; display: block; margin: 0 auto;" />' +
             '<div style="font-family: monospace; font-size: 16px; font-weight: bold; color: #1a202c; margin-top: 12px; letter-spacing: 2px;">' + passId + '</div>' +
           '</div>' +
 
@@ -478,6 +478,9 @@ function sendPassEmail(name, email, passId, qrUrl) {
 
     if (qrBlob) {
       mailOptions.attachments = [qrBlob];
+      mailOptions.inlineImages = {
+        qrInline: qrBlob
+      };
     }
 
     MailApp.sendEmail(mailOptions);

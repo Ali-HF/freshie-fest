@@ -109,6 +109,9 @@
         </div>
 
         <div id="result-container" style="display: none;">
+          <!-- Dynamic Email / Delivery Status Banner -->
+          <div id="delivery-status-banner" class="alert alert-success" style="margin-bottom: 16px;"></div>
+
           <div class="ticket-container">
             <div class="ticket-card" id="ticket-pass-card">
               <div class="ticket-header">
@@ -287,6 +290,20 @@
       document.getElementById('ticket-pass-id-display').textContent = data.passId;
       document.getElementById('ticket-name-display').textContent = data.name;
       document.getElementById('ticket-qr-image').src = data.qrUrl;
+
+      // Delivery Status Banner
+      const banner = document.getElementById('delivery-status-banner');
+      if (data.emailSent || data.email) {
+        banner.className = 'alert alert-success';
+        banner.innerHTML = `<strong>✉️ Ticket Emailed Automatically:</strong> QR pass has been sent to <code>${escapeHtml(data.email)}</code>!`;
+        banner.style.display = 'flex';
+      } else if (data.whatsapp) {
+        banner.className = 'alert alert-info';
+        banner.innerHTML = `<strong>💬 WhatsApp Delivery:</strong> No email provided. Click the WhatsApp button below to send the pass to <code>${escapeHtml(data.whatsapp)}</code>.`;
+        banner.style.display = 'flex';
+      } else {
+        banner.style.display = 'none';
+      }
 
       const notesEl = document.getElementById('ticket-notes-display');
       if (data.notes) {
