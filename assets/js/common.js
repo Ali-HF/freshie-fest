@@ -70,6 +70,7 @@ function renderHeader(activePage = 'hub') {
           <div id="settings-test-result" style="display: none; margin-top: 16px;"></div>
         </div>
         <div class="modal-footer">
+          <button class="btn btn-secondary" onclick="triggerSheetPrettify()" title="Format and align Google Sheet columns">🎨 Prettify Google Sheet</button>
           <button class="btn btn-secondary" onclick="testConnection()">⚡ Test Connection</button>
           <button class="btn btn-primary" onclick="saveSettings()">💾 Save Settings</button>
         </div>
@@ -179,6 +180,28 @@ function saveSettings() {
   // Trigger reload of stats if on dashboard/generator
   if (typeof window.refreshDashboardStats === 'function') {
     window.refreshDashboardStats();
+  }
+}
+
+async function triggerSheetPrettify() {
+  const resultDiv = document.getElementById('settings-test-result');
+  resultDiv.style.display = 'block';
+  resultDiv.className = 'alert alert-info';
+  resultDiv.innerHTML = '⏳ Formatting, aligning columns & styling Google Sheet...';
+
+  try {
+    const res = await window.apiClient.request('prettify');
+    if (res && res.success) {
+      resultDiv.className = 'alert alert-success';
+      resultDiv.innerHTML = '<strong>✨ Google Sheet Prettified!</strong><br>Headers, column widths, conditional colors, and row alignments have been updated!';
+      showToast('Google Sheet successfully formatted & styled!', 'success');
+    } else {
+      resultDiv.className = 'alert alert-danger';
+      resultDiv.innerHTML = `<strong>Error:</strong> ${res.error || 'Failed to format sheet'}`;
+    }
+  } catch (err) {
+    resultDiv.className = 'alert alert-danger';
+    resultDiv.innerHTML = `<strong>Error:</strong> ${err.message}`;
   }
 }
 
