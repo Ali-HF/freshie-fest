@@ -39,17 +39,6 @@
           </div>
 
           <form id="pass-form" onsubmit="handleFormSubmit(event)">
-            <!-- Admin Code Field -->
-            <div class="form-group">
-              <label class="form-label" for="admin-code">
-                Admin Security Code <span class="required">*</span>
-              </label>
-              <div class="input-with-icon">
-                <span class="input-icon">🔒</span>
-                <input type="password" id="admin-code" class="form-input" placeholder="Enter administrative authorization code" required>
-              </div>
-            </div>
-
             <!-- Attendee Name & Roll No Row -->
             <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 12px;">
               <div class="form-group">
@@ -273,27 +262,19 @@
 
     document.addEventListener('DOMContentLoaded', () => {
       renderHeader('generate');
-      
-      const savedAdminCode = window.appConfig.get('ADMIN_CODE') || 'FRESHIE2026';
-      document.getElementById('admin-code').value = savedAdminCode;
-
       loadPassesList();
     });
 
     async function handleFormSubmit(e) {
       e.preventDefault();
 
-      const adminCode = document.getElementById('admin-code').value.trim();
+      const adminCode = window.appConfig.get('ADMIN_CODE') || '';
       const name = document.getElementById('attendee-name').value.trim();
       const rollNo = document.getElementById('attendee-roll').value.trim();
       const amount = Number(document.getElementById('attendee-amount').value) || 0;
       const email = document.getElementById('attendee-email').value.trim();
       const whatsapp = document.getElementById('attendee-whatsapp').value.trim();
 
-      if (!adminCode) {
-        showToast('Please enter the Admin Code.', 'warning');
-        return;
-      }
       if (!name) {
         showToast('Please enter attendee name.', 'warning');
         return;
@@ -302,8 +283,6 @@
         showToast('Please enter Roll Number.', 'warning');
         return;
       }
-
-      window.appConfig.set('ADMIN_CODE', adminCode);
 
       const btn = document.getElementById('btn-submit');
       const originalText = btn.innerHTML;
@@ -542,7 +521,7 @@
     }
 
     async function loadPassesList() {
-      const adminCode = window.appConfig.get('ADMIN_CODE') || 'FRESHIE2026';
+      const adminCode = window.appConfig.get('ADMIN_CODE') || '';
       try {
         const res = await window.apiClient.getPasses('', adminCode);
         if (res && res.success) {

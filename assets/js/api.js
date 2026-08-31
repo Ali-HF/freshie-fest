@@ -64,13 +64,6 @@ class MockBackendStore {
   }
 
   generatePass(payload) {
-    const adminCode = payload.adminCode;
-    const expectedCode = window.appConfig.get('ADMIN_CODE') || 'FRESHIE2026';
-    
-    if (adminCode !== expectedCode) {
-      return { success: false, error: 'Unauthorized: Invalid Admin Code' };
-    }
-
     const name = (payload.name || '').trim();
     if (!name) {
       return { success: false, error: 'Attendee name is required.' };

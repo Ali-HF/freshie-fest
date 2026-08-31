@@ -179,7 +179,7 @@
       const tbody = document.getElementById('recent-passes-tbody');
 
       try {
-        const adminCode = window.appConfig.get('ADMIN_CODE') || 'FRESHIE2026';
+        const adminCode = window.appConfig.get('ADMIN_CODE') || '';
         const res = await window.apiClient.getStats(adminCode);
 
         if (res && res.success) {

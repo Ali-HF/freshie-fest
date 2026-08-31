@@ -11,7 +11,7 @@ const DEFAULT_CONFIG = {
   EVENT_TIME: '07:00 PM ONWARDS',
   EVENT_VENUE: 'Grand Arena, Main Campus',
   APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbwNAcgGHqIwqDF-K6GEQHKpJTMICvUAOjpRw5sf2rDEjjrgCmrHDtZobBtlKM6Ta6Vv/exec',
-  ADMIN_CODE: 'FRESHIE2026',
+  ADMIN_CODE: '',
   USE_MOCK_API: false,
   RESET_TIMEOUT_SECONDS: 3
 };

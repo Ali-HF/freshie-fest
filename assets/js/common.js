@@ -169,7 +169,7 @@ function saveSettings() {
   const mockInput = document.getElementById('setting-mock-mode');
 
   window.appConfig.set('APPS_SCRIPT_URL', urlInput.value.trim());
-  window.appConfig.set('ADMIN_CODE', codeInput.value.trim() || 'FRESHIE2026');
+  window.appConfig.set('ADMIN_CODE', codeInput.value.trim());
   window.appConfig.set('USE_MOCK_API', mockInput.checked);
 
   updateConnectionBadge();

@@ -14,7 +14,6 @@
  */
 
 var CONFIG = {
-  DEFAULT_ADMIN_CODE: 'FRESHIE2026',
   SHEET_NAME: 'Attendees',
   EVENT_NAME: 'The Last Soiree 2026',
   EVENT_SUBTITLE: 'Annual Dinner & Welcome Gala',
@@ -109,9 +108,10 @@ function doPost(e) {
 }
 
 function validateAdminCode(providedCode) {
+  var expectedCode = PropertiesService.getScriptProperties().getProperty('ADMIN_CODE');
+  // If no ADMIN_CODE property is set in Apps Script settings, allow requests freely
+  if (!expectedCode || expectedCode.trim().length === 0) return true;
   if (!providedCode) return false;
-  var scriptPropCode = PropertiesService.getScriptProperties().getProperty('ADMIN_CODE');
-  var expectedCode = scriptPropCode || CONFIG.DEFAULT_ADMIN_CODE;
   return String(providedCode).trim() === String(expectedCode).trim();
 }
 
