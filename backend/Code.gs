@@ -402,60 +402,60 @@ function sendPassEmail(name, rollNo, amount, email, passId, qrUrl) {
     var subject = 'Official Event Entry Credential: ' + CONFIG.EVENT_NAME + ' [' + passId + ']';
 
     var htmlBody = 
-      '<div style="font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, Helvetica, Arial, sans-serif; max-width: 540px; margin: 0 auto; background: #0f172a; color: #f8fafc; border-radius: 12px; overflow: hidden; border: 1px solid #1e293b; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">' +
+      '<div style="font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, Helvetica, Arial, sans-serif; max-width: 540px; margin: 0 auto; background: #ffffff; color: #0f172a; border-radius: 2px; overflow: hidden; border: 1px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.06);">' +
         
         '<!-- Header Accent Bar -->' +
-        '<div style="background: #2563eb; height: 6px; width: 100%;"></div>' +
+        '<div style="background: #6d28d9; height: 6px; width: 100%;"></div>' +
 
         '<!-- Header -->' +
-        '<div style="padding: 24px 24px 16px 24px; border-bottom: 1px solid #1e293b; background: #0b1120;">' +
-          '<div style="font-size: 11px; font-weight: 700; letter-spacing: 1px; color: #38bdf8; text-transform: uppercase; margin-bottom: 4px;">' + CONFIG.PRESENTER + '</div>' +
-          '<h1 style="margin: 0; color: #ffffff; font-size: 22px; font-weight: 800; letter-spacing: -0.3px;">' + CONFIG.EVENT_NAME + '</h1>' +
-          '<div style="font-size: 13px; color: #94a3b8; margin-top: 2px;">' + CONFIG.EVENT_SUBTITLE + ' • Official Entry Credential</div>' +
+        '<div style="padding: 24px 24px 16px 24px; border-bottom: 1px solid #e2e8f0; background: #faf5ff;">' +
+          '<div style="font-size: 11px; font-weight: 700; letter-spacing: 1px; color: #6d28d9; text-transform: uppercase; margin-bottom: 4px;">' + CONFIG.PRESENTER + '</div>' +
+          '<h1 style="margin: 0; color: #0f172a; font-size: 22px; font-weight: 800; letter-spacing: -0.3px;">' + CONFIG.EVENT_NAME + '</h1>' +
+          '<div style="font-size: 13px; color: #64748b; margin-top: 2px;">' + CONFIG.EVENT_SUBTITLE + ' • Official Entry Credential</div>' +
         '</div>' +
 
         '<div style="padding: 24px;">' +
           '<!-- Event Meta Box -->' +
-          '<div style="background: #1e293b; border-radius: 8px; padding: 12px 16px; margin-bottom: 20px; font-size: 13px; color: #cbd5e1; border: 1px solid rgba(148, 163, 184, 0.1);">' +
+          '<div style="background: #f8fafc; border-radius: 2px; padding: 12px 16px; margin-bottom: 20px; font-size: 13px; color: #334155; border: 1px solid #e2e8f0;">' +
             '<div style="margin-bottom: 4px;"><strong>Date & Time:</strong> ' + CONFIG.EVENT_DATE + ' • ' + CONFIG.EVENT_TIME + '</div>' +
             '<div><strong>Venue:</strong> ' + CONFIG.EVENT_VENUE + '</div>' +
           '</div>' +
 
           '<!-- QR Pass Centerpiece -->' +
           '<div style="text-align: center; margin-bottom: 20px;">' +
-            '<div style="background: #ffffff; padding: 14px; border-radius: 10px; display: inline-block; box-shadow: 0 4px 15px rgba(0,0,0,0.4);">' +
+            '<div style="background: #ffffff; padding: 14px; border-radius: 2px; display: inline-block; border: 1px solid #e2e8f0; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">' +
               '<img src="' + (qrBlob ? 'cid:qrInline' : qrUrl) + '" alt="QR Pass" style="width: 180px; height: 180px; display: block; margin: 0 auto;" />' +
-              '<div style="font-family: monospace; font-size: 16px; font-weight: bold; color: #0f172a; margin-top: 8px; letter-spacing: 1px;">' + passId + '</div>' +
+              '<div style="font-family: monospace; font-size: 16px; font-weight: bold; color: #6d28d9; margin-top: 8px; letter-spacing: 1px;">' + passId + '</div>' +
             '</div>' +
             '<div style="font-size: 12px; color: #64748b; margin-top: 8px;">Present this QR code at the admission gate</div>' +
           '</div>' +
 
           '<!-- Attendee Information -->' +
-          '<div style="background: #020617; border-radius: 8px; padding: 16px; border: 1px solid #1e293b; margin-bottom: 20px;">' +
+          '<div style="background: #f8fafc; border-radius: 2px; padding: 16px; border: 1px solid #e2e8f0; margin-bottom: 20px;">' +
             '<table style="width: 100%; border-collapse: collapse; font-size: 13px;">' +
               '<tr>' +
                 '<td style="padding: 6px 0; color: #64748b; font-weight: 600; width: 40%;">ATTENDEE NAME</td>' +
-                '<td style="padding: 6px 0; color: #ffffff; font-weight: 700; text-align: right;">' + name.toUpperCase() + '</td>' +
+                '<td style="padding: 6px 0; color: #0f172a; font-weight: 700; text-align: right;">' + name.toUpperCase() + '</td>' +
               '</tr>' +
               (rollNo ? 
               '<tr>' +
                 '<td style="padding: 6px 0; color: #64748b; font-weight: 600;">ROLL NUMBER</td>' +
-                '<td style="padding: 6px 0; color: #38bdf8; font-weight: 700; font-family: monospace; text-align: right;">' + rollNo + '</td>' +
+                '<td style="padding: 6px 0; color: #6d28d9; font-weight: 700; font-family: monospace; text-align: right;">' + rollNo + '</td>' +
               '</tr>' : '') +
               (amount ? 
               '<tr>' +
                 '<td style="padding: 6px 0; color: #64748b; font-weight: 600;">AMOUNT PAID</td>' +
-                '<td style="padding: 6px 0; color: #10b981; font-weight: 700; text-align: right;">' + CONFIG.CURRENCY_SYMBOL + amount + '</td>' +
+                '<td style="padding: 6px 0; color: #059669; font-weight: 700; text-align: right;">' + CONFIG.CURRENCY_SYMBOL + amount + '</td>' +
               '</tr>' : '') +
             '</table>' +
           '</div>' +
 
-          '<div style="font-size: 12px; color: #475569; text-align: center; line-height: 1.4;">' +
+          '<div style="font-size: 12px; color: #64748b; text-align: center; line-height: 1.4;">' +
             'This credential is tied to your registration and is strictly valid for single gate check-in.' +
           '</div>' +
         '</div>' +
 
-        '<div style="background: #020617; padding: 14px 24px; text-align: center; font-size: 11px; color: #475569; border-top: 1px solid #1e293b;">' +
+        '<div style="background: #f8fafc; padding: 14px 24px; text-align: center; font-size: 11px; color: #94a3b8; border-top: 1px solid #e2e8f0;">' +
           'Department of Computer Science & IT • Event Operations Support' +
         '</div>' +
       '</div>';

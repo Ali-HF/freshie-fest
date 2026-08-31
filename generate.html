@@ -423,42 +423,52 @@
       canvas.height = 980;
       const ctx = canvas.getContext('2d');
 
-      // Background
-      ctx.fillStyle = '#0f172a';
+      // White Background
+      ctx.fillStyle = '#ffffff';
       ctx.fillRect(0, 0, 800, 980);
 
-      // Top Accent Bar
-      ctx.fillStyle = '#2563eb';
+      // Outer Sharp Border
+      ctx.strokeStyle = '#e2e8f0';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(1, 1, 798, 978);
+
+      // Top Purple Accent Bar
+      ctx.fillStyle = '#6d28d9';
       ctx.fillRect(0, 0, 800, 14);
 
       // Card Header Box
-      ctx.fillStyle = '#1e293b';
+      ctx.fillStyle = '#faf5ff';
       ctx.fillRect(40, 50, 720, 120);
+      ctx.strokeStyle = '#ddd6fe';
+      ctx.strokeRect(40, 50, 720, 120);
 
-      ctx.fillStyle = '#38bdf8';
-      ctx.font = 'bold 16px Inter, sans-serif';
+      ctx.fillStyle = '#6d28d9';
+      ctx.font = 'bold 15px Inter, sans-serif';
       ctx.fillText('CSIT OPERATIONS', 70, 90);
 
-      ctx.fillStyle = '#ffffff';
+      ctx.fillStyle = '#0f172a';
       ctx.font = 'bold 34px Inter, sans-serif';
       ctx.fillText('The Last Soiree 2026', 70, 135);
 
-      ctx.fillStyle = '#94a3b8';
+      ctx.fillStyle = '#64748b';
       ctx.font = '15px Inter, sans-serif';
       ctx.fillText('Official Entry Credential', 540, 135);
 
       // Meta boxes (Date & Venue)
-      ctx.fillStyle = '#1e293b';
+      ctx.fillStyle = '#f8fafc';
       ctx.fillRect(40, 190, 350, 70);
       ctx.fillRect(410, 190, 350, 70);
+      ctx.strokeStyle = '#e2e8f0';
+      ctx.strokeRect(40, 190, 350, 70);
+      ctx.strokeRect(410, 190, 350, 70);
 
       ctx.fillStyle = '#64748b';
-      ctx.font = '13px Inter, sans-serif';
+      ctx.font = 'bold 12px Inter, sans-serif';
       ctx.fillText('DATE & TIME', 60, 218);
       ctx.fillText('VENUE', 430, 218);
 
-      ctx.fillStyle = '#f8fafc';
-      ctx.font = 'bold 17px Inter, sans-serif';
+      ctx.fillStyle = '#0f172a';
+      ctx.font = 'bold 16px Inter, sans-serif';
       ctx.fillText('16 May 2026 • 07:00 PM', 60, 245);
       ctx.fillText('Grand Arena, Campus', 430, 245);
 
@@ -467,64 +477,57 @@
       qrImg.crossOrigin = 'Anonymous';
       qrImg.onload = () => {
         // QR Container
-        ctx.fillStyle = '#020617';
-        ctx.strokeStyle = '#334155';
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.roundRect(40, 280, 720, 290, 12);
-        ctx.fill();
-        ctx.stroke();
-
-        // White QR Box
         ctx.fillStyle = '#ffffff';
-        ctx.beginPath();
-        ctx.roundRect(70, 305, 240, 240, 8);
-        ctx.fill();
-        ctx.drawImage(qrImg, 80, 315, 220, 220);
+        ctx.strokeStyle = '#e2e8f0';
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(40, 280, 720, 290);
+
+        // QR Code Image
+        ctx.drawImage(qrImg, 70, 310, 230, 230);
 
         // QR Meta Info
-        ctx.fillStyle = '#38bdf8';
-        ctx.font = 'bold 15px Inter, sans-serif';
-        ctx.fillText('OFFICIAL ENTRY PASS', 350, 360);
+        ctx.fillStyle = '#6d28d9';
+        ctx.font = 'bold 14px Inter, sans-serif';
+        ctx.fillText('OFFICIAL ENTRY PASS', 340, 360);
 
         ctx.fillStyle = '#64748b';
-        ctx.font = '13px Inter, sans-serif';
-        ctx.fillText('PASS IDENTIFIER', 350, 410);
+        ctx.font = 'bold 12px Inter, sans-serif';
+        ctx.fillText('PASS IDENTIFIER', 340, 410);
 
-        ctx.fillStyle = '#ffffff';
+        ctx.fillStyle = '#6d28d9';
         ctx.font = 'bold 36px monospace';
-        ctx.fillText(currentPassData.passId, 350, 455);
+        ctx.fillText(currentPassData.passId, 340, 455);
 
-        ctx.fillStyle = '#94a3b8';
+        ctx.fillStyle = '#64748b';
         ctx.font = '14px Inter, sans-serif';
-        ctx.fillText('Scan this QR code at the door for entry verification.', 350, 510);
+        ctx.fillText('Scan this QR code at the gate for entry verification.', 340, 510);
 
         // Attendee Details
-        ctx.fillStyle = '#1e293b';
-        ctx.beginPath();
-        ctx.roundRect(40, 590, 720, 250, 12);
-        ctx.fill();
+        ctx.fillStyle = '#f8fafc';
+        ctx.fillRect(40, 590, 720, 250);
+        ctx.strokeStyle = '#e2e8f0';
+        ctx.strokeRect(40, 590, 720, 250);
 
         ctx.fillStyle = '#64748b';
-        ctx.font = '15px Inter, sans-serif';
+        ctx.font = 'bold 14px Inter, sans-serif';
         ctx.fillText('ATTENDEE NAME', 70, 645);
         ctx.fillText('ROLL NUMBER', 70, 710);
         ctx.fillText('AMOUNT PAID', 70, 775);
 
-        ctx.fillStyle = '#ffffff';
+        ctx.fillStyle = '#0f172a';
         ctx.font = 'bold 22px Inter, sans-serif';
-        ctx.fillText(currentPassData.name.toUpperCase(), 350, 645);
+        ctx.fillText(currentPassData.name.toUpperCase(), 340, 645);
 
-        ctx.fillStyle = '#38bdf8';
+        ctx.fillStyle = '#6d28d9';
         ctx.font = 'bold 22px monospace';
-        ctx.fillText(currentPassData.rollNo || 'N/A', 350, 710);
+        ctx.fillText(currentPassData.rollNo || 'N/A', 340, 710);
 
-        ctx.fillStyle = '#10b981';
+        ctx.fillStyle = '#059669';
         ctx.font = 'bold 22px Inter, sans-serif';
-        ctx.fillText(`Rs. ${(currentPassData.amount || 0).toLocaleString()}`, 350, 775);
+        ctx.fillText(`Rs. ${(currentPassData.amount || 0).toLocaleString()}`, 340, 775);
 
         // Footer
-        ctx.fillStyle = '#475569';
+        ctx.fillStyle = '#94a3b8';
         ctx.font = '13px Inter, sans-serif';
         ctx.textAlign = 'center';
         ctx.fillText('OFFICIAL CREDENTIAL • DEPARTMENT OF COMPUTER SCIENCE & IT', 400, 920);
