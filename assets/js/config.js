@@ -1,15 +1,17 @@
 /**
- * Freshie Fest - Configuration & Local Settings Manager
+ * CSIT Event Pass - Configuration & Local Settings Manager
  */
 
 const DEFAULT_CONFIG = {
-  EVENT_NAME: 'Freshie Fest 2026',
-  EVENT_DATE: 'Saturday, October 24, 2026',
+  EVENT_NAME: 'The Last Soiree',
+  EVENT_SUBTITLE: 'ANNUAL DINNER',
+  PRESENTER: 'CSIT JUNIORS PRESENTS',
+  EVENT_TAGLINE: 'AN EVENING OF CELEBRATION | CONNECTION | LEGACY',
+  EVENT_DATE: '16 MAY 2026',
+  EVENT_TIME: '07:00 PM ONWARDS',
   EVENT_VENUE: 'Grand Arena, Main Campus',
-  // You can set a hardcoded deployment URL here or configure it in the UI settings
   APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbwNAcgGHqIwqDF-K6GEQHKpJTMICvUAOjpRw5sf2rDEjjrgCmrHDtZobBtlKM6Ta6Vv/exec',
   ADMIN_CODE: 'FRESHIE2026',
-  // If true or if no Apps Script URL is set, app will run in Demo/Mock Mode
   USE_MOCK_API: false,
   RESET_TIMEOUT_SECONDS: 3
 };

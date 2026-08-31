@@ -3,26 +3,26 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pass Generator - Freshie Fest 2026</title>
-  <meta name="description" content="Generate and issue unique QR entry passes for Freshie Fest 2026">
+  <title>VIP Pass Generator - The Last Soiree / Welcome Party 2026</title>
+  <meta name="description" content="Generate and issue official QR entry passes for CSIT Annual Dinner & Welcome Party 2026">
   <link rel="stylesheet" href="assets/css/style.css">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✨</text></svg>">
 </head>
 <body>
 
-  <main class="container" style="padding-top: 32px; padding-bottom: 60px;">
+  <main class="container" style="padding-top: 28px; padding-bottom: 60px;">
     
     <div class="flex-between" style="margin-bottom: 24px; flex-wrap: wrap;">
       <div>
         <h1 style="font-size: 1.8rem; font-weight: 800; display: flex; align-items: center; gap: 10px;">
-          <span>🎫</span> Attendee Pass Generator
+          <span>🎫</span> VIP Entry Pass Generator
         </h1>
         <p style="color: var(--text-muted); font-size: 0.95rem; margin-top: 4px;">
-          Issue verified QR entry passes after confirming manual payment.
+          CSIT Juniors & Seniors Presents: <em>The Last Soiree / Welcome Party 2026</em>
         </p>
       </div>
       <div style="display: flex; gap: 10px; align-items: center;">
-        <span class="badge badge-info">🔒 Protected with Admin Code</span>
+        <span class="badge badge-info">🔒 Admin Verification Protected</span>
       </div>
     </div>
 
@@ -31,128 +31,213 @@
       <div>
         <div class="card card-glass">
           <div class="card-header">
-            <div class="card-title"><span>📝</span> Attendee Details</div>
-            <div style="font-size: 0.8rem; color: var(--text-dim);">Step 1 of 2</div>
+            <div class="card-title"><span>📝</span> Attendee Registration Details</div>
+            <div style="font-size: 0.8rem; color: var(--sapphire-glow);">Step 1 of 2</div>
           </div>
 
           <form id="pass-form" onsubmit="handleFormSubmit(event)">
             <!-- Admin Code Field -->
             <div class="form-group">
               <label class="form-label" for="admin-code">
-                Admin Code <span class="required">*</span>
+                Admin Security Code <span class="required">*</span>
               </label>
               <div class="input-with-icon">
                 <span class="input-icon">🔑</span>
-                <input type="password" id="admin-code" class="form-input" placeholder="Enter secret admin code" required>
+                <input type="password" id="admin-code" class="form-input" placeholder="Enter admin code" required>
               </div>
-              <div class="form-hint">Sent to the API to verify organizer authorization.</div>
             </div>
 
-            <!-- Attendee Name -->
-            <div class="form-group">
-              <label class="form-label" for="attendee-name">
-                Attendee Full Name <span class="required">*</span>
-              </label>
-              <div class="input-with-icon">
-                <span class="input-icon">👤</span>
-                <input type="text" id="attendee-name" class="form-input" placeholder="e.g. Alex Rivera" required autocomplete="off">
+            <!-- Attendee Name & Roll No Row -->
+            <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 14px;">
+              <div class="form-group">
+                <label class="form-label" for="attendee-name">
+                  Full Name <span class="required">*</span>
+                </label>
+                <div class="input-with-icon">
+                  <span class="input-icon">👤</span>
+                  <input type="text" id="attendee-name" class="form-input" placeholder="e.g. Aiza Asim" required autocomplete="off">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="attendee-roll">
+                  Roll No / ID <span class="required">*</span>
+                </label>
+                <div class="input-with-icon">
+                  <span class="input-icon">🎓</span>
+                  <input type="text" id="attendee-roll" class="form-input" placeholder="e.g. 22F-BSCS-026" required autocomplete="off" style="text-transform: uppercase;">
+                </div>
+              </div>
+            </div>
+
+            <!-- Batch & Category Row -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+              <div class="form-group">
+                <label class="form-label" for="attendee-batch">
+                  Batch / Dept
+                </label>
+                <select id="attendee-batch" class="form-select">
+                  <option value="CSIT Juniors (2022-26)" selected>CSIT Juniors (2022-26)</option>
+                  <option value="CSIT Seniors (2021-25)">CSIT Seniors (2021-25)</option>
+                  <option value="CSIT Freshies (2024-28)">CSIT Freshies (2024-28)</option>
+                  <option value="CSIT Sophomores (2023-27)">CSIT Sophomores (2023-27)</option>
+                  <option value="Faculty / Guest">Faculty / Guest</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="attendee-category">
+                  Pass Category
+                </label>
+                <select id="attendee-category" class="form-select">
+                  <option value="Standard Entry" selected>Standard Entry</option>
+                  <option value="VIP Pass">VIP Pass</option>
+                  <option value="Executive Committee">Executive Committee</option>
+                  <option value="Performer / Host">Performer / Host</option>
+                </select>
               </div>
             </div>
 
             <!-- Attendee Email -->
             <div class="form-group">
               <label class="form-label" for="attendee-email">
-                Email Address <span style="font-size: 0.78rem; color: var(--text-dim);">(Optional for auto-email)</span>
+                Email Address <span style="font-size: 0.78rem; color: var(--sapphire-glow);">(Auto-sends pass with QR attachment)</span>
               </label>
               <div class="input-with-icon">
                 <span class="input-icon">✉️</span>
-                <input type="email" id="attendee-email" class="form-input" placeholder="e.g. alex.rivera@gmail.com">
+                <input type="email" id="attendee-email" class="form-input" placeholder="e.g. aiza.asim@gmail.com">
               </div>
-              <div class="form-hint">Google Apps Script will automatically email the QR pass if provided.</div>
             </div>
 
             <!-- Attendee WhatsApp -->
             <div class="form-group">
               <label class="form-label" for="attendee-whatsapp">
-                WhatsApp Phone Number <span style="font-size: 0.78rem; color: var(--text-dim);">(Optional for wa.me link)</span>
+                WhatsApp Number <span style="font-size: 0.78rem; color: var(--text-dim);">(For 1-click wa.me assist)</span>
               </label>
               <div class="input-with-icon">
                 <span class="input-icon">💬</span>
-                <input type="tel" id="attendee-whatsapp" class="form-input" placeholder="e.g. +1 555 019 2834 (include country code)">
+                <input type="tel" id="attendee-whatsapp" class="form-input" placeholder="e.g. +92 300 1234567 (with country code)">
               </div>
-              <div class="form-hint">Generates a 1-click WhatsApp deep link with pre-formatted message.</div>
             </div>
 
-            <!-- Notes / Tags -->
+            <!-- Notes / Table -->
             <div class="form-group">
               <label class="form-label" for="attendee-notes">
-                Notes / Reference <span style="font-size: 0.78rem; color: var(--text-dim);">(Optional)</span>
+                Table # / Special Notes <span style="font-size: 0.78rem; color: var(--text-dim);">(Optional)</span>
               </label>
-              <input type="text" id="attendee-notes" class="form-input" placeholder="e.g. Paid via Bank Transfer #9842, VIP Table 4">
+              <input type="text" id="attendee-notes" class="form-input" placeholder="e.g. Table 4, Vegetarian Meal, Paid via JazzCash">
             </div>
 
             <button type="submit" id="btn-submit" class="btn btn-primary btn-lg btn-block" style="margin-top: 8px;">
-              <span>⚡</span> Generate Pass & Sync Sheet
+              <span>✨</span> Generate VIP Pass & Sync Database
             </button>
           </form>
         </div>
       </div>
 
-      <!-- Right Column: Result Pass Preview & Quick Actions -->
+      <!-- Right Column: Result Pass Preview & Actions -->
       <div>
-        <div id="empty-state" class="card" style="text-align: center; padding: 60px 24px; border-style: dashed;">
-          <div style="font-size: 54px; margin-bottom: 16px; opacity: 0.7;">🎫</div>
-          <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 8px;">Pass Preview Area</h3>
-          <p style="color: var(--text-muted); font-size: 0.9rem; max-width: 320px; margin: 0 auto 20px auto;">
-            Fill out the attendee details on the left and click <strong>Generate Pass</strong> to preview the official ticket, download the pass image, or send on WhatsApp.
+        <div id="empty-state" class="card" style="text-align: center; padding: 70px 24px; border-style: dashed; border-color: rgba(96, 165, 250, 0.3);">
+          <div style="font-size: 54px; margin-bottom: 16px; opacity: 0.8;">🎫✨</div>
+          <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 8px; color: #93c5fd;">VIP Pass Live Preview</h3>
+          <p style="color: var(--text-muted); font-size: 0.9rem; max-width: 320px; margin: 0 auto;">
+            Fill in the attendee details and Roll No on the left to generate the official royal sapphire pass card.
           </p>
         </div>
 
         <div id="result-container" style="display: none;">
-          <!-- Dynamic Email / Delivery Status Banner -->
+          <!-- Delivery Banner -->
           <div id="delivery-status-banner" class="alert alert-success" style="margin-bottom: 16px;"></div>
 
+          <!-- THE ROYAL SAPPHIRE TICKET CARD -->
           <div class="ticket-container">
-            <div class="ticket-card" id="ticket-pass-card">
-              <div class="ticket-header">
-                <span class="ticket-badge">Verified Entry Pass</span>
-                <div class="ticket-event-name">FRESHIE FEST 2026</div>
-                <div class="ticket-event-details">📅 Sat, Oct 24 • 📍 Grand Arena</div>
+            <div class="royal-ticket-card" id="royal-ticket-pass-card">
+              <div class="royal-ticket-inner-border"></div>
+
+              <!-- Top Hole -->
+              <div class="royal-ticket-hole"></div>
+
+              <div class="royal-ticket-presenter" id="card-presenter">CSIT JUNIORS PRESENTS</div>
+              <div class="royal-ticket-title" id="card-event-title">The Last Soiree</div>
+              <div class="royal-ticket-category" id="card-subtitle">ANNUAL DINNER</div>
+
+              <div class="royal-divider-row">
+                <div class="royal-divider-line"></div>
+                <span style="font-size: 14px;">❖</span>
+                <div class="royal-divider-line"></div>
               </div>
 
-              <div class="ticket-body">
-                <div class="ticket-qr-box">
-                  <img id="ticket-qr-image" class="ticket-qr-img" src="" alt="QR Pass">
+              <div class="royal-entry-pass-badge">
+                <span>✦</span> ENTRY PASS <span>✦</span>
+              </div>
+
+              <!-- Date & Time Row -->
+              <div class="royal-datetime-grid">
+                <div class="royal-date-box">
+                  <span class="royal-box-icon">📅</span>
+                  <div style="text-align: left;">
+                    <div class="royal-box-val" id="card-date-val">16 MAY</div>
+                    <div class="royal-box-lbl">2026</div>
+                  </div>
                 </div>
-                <div id="ticket-pass-id-display" class="ticket-pass-id">FF-XXXX-XXXX</div>
-                <div id="ticket-name-display" class="ticket-attendee-name">Guest Name</div>
-                <div id="ticket-notes-display" style="font-size: 0.8rem; color: var(--text-dim); margin-top: 4px;"></div>
+
+                <div class="royal-time-box">
+                  <span class="royal-box-icon">⏰</span>
+                  <div style="text-align: left;">
+                    <div class="royal-box-val" id="card-time-val">07:00</div>
+                    <div class="royal-box-lbl">PM ONWARDS</div>
+                  </div>
+                </div>
               </div>
 
-              <div class="ticket-divider">
-                <div class="ticket-dash"></div>
+              <!-- QR Container -->
+              <div class="royal-qr-container">
+                <div class="royal-qr-img-box">
+                  <img id="ticket-qr-image" class="royal-qr-img" src="" alt="QR Pass">
+                </div>
+                <div class="royal-qr-meta">
+                  <div class="royal-scan-instruction">SCAN FOR ENTRY</div>
+                  <div id="ticket-pass-id-display" class="royal-pass-id">#LSAD26-026</div>
+                  <div id="ticket-category-tag" style="font-size: 0.72rem; color: #93c5fd; margin-top: 4px; text-transform: uppercase;">Standard Entry</div>
+                </div>
               </div>
 
-              <div class="ticket-footer">
-                ⚡ Strictly valid for 1 entry. Present this QR at the entrance door.
+              <!-- Attendee Details Section -->
+              <div class="royal-attendee-section">
+                <div class="royal-field-row">
+                  <span class="royal-field-label">NAME</span>
+                  <span id="ticket-name-display" class="royal-field-val">AIZA ASIM</span>
+                </div>
+                <div class="royal-field-row">
+                  <span class="royal-field-label">ROLL NO</span>
+                  <span id="ticket-roll-display" class="royal-field-val" style="color: #93c5fd; font-family: var(--font-mono);">22F-BSCS-026</span>
+                </div>
+                <div class="royal-field-row">
+                  <span class="royal-field-label">BATCH</span>
+                  <span id="ticket-batch-display" class="royal-field-val" style="font-size: 0.9rem; color: #cbd5e1;">CSIT JUNIORS</span>
+                </div>
+              </div>
+
+              <div class="royal-ticket-footer">
+                AN EVENING OF CELEBRATION | CONNECTION | LEGACY
               </div>
             </div>
           </div>
 
-          <!-- Action Buttons -->
-          <div class="card" style="margin-top: 20px;">
-            <div class="card-title" style="font-size: 1rem; margin-bottom: 16px;">
-              <span>📤</span> Pass Delivery & Export Actions
+          <!-- Actions Card -->
+          <div class="card" style="margin-top: 18px;">
+            <div class="card-title" style="font-size: 1rem; margin-bottom: 14px;">
+              <span>📤</span> Pass Export & Direct Actions
             </div>
 
-            <div style="display: flex; flex-direction: column; gap: 12px;">
+            <div style="display: flex; flex-direction: column; gap: 10px;">
               <a id="btn-whatsapp-send" href="#" target="_blank" class="btn btn-whatsapp btn-block" style="display: none;">
-                <span>💬</span> Open in WhatsApp (wa.me)
+                <span>💬</span> Open WhatsApp Chat (wa.me)
               </a>
 
               <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                <button class="btn btn-secondary" onclick="downloadTicketImage()">
-                  <span>📥</span> Save Image
+                <button class="btn btn-primary" onclick="downloadRoyalTicketImage()">
+                  <span>📥</span> Download Poster
                 </button>
                 <button class="btn btn-secondary" onclick="window.print()">
                   <span>🖨️</span> Print Pass
@@ -168,8 +253,8 @@
                 </button>
               </div>
 
-              <button class="btn btn-primary" onclick="resetFormForNext()" style="margin-top: 8px;">
-                <span>➕</span> Issue Another Pass
+              <button class="btn btn-party" onclick="resetFormForNext()" style="margin-top: 6px;">
+                <span>➕</span> Issue Another Attendee Pass
               </button>
             </div>
           </div>
@@ -177,15 +262,15 @@
       </div>
     </div>
 
-    <!-- Recent Passes Table -->
+    <!-- Recent Issued Passes Table -->
     <section class="card" style="margin-top: 40px;">
       <div class="card-header">
         <div>
-          <div class="card-title"><span>📋</span> Issued Passes List</div>
-          <div class="card-subtitle">Instant lookup and delivery shortcuts</div>
+          <div class="card-title"><span>📋</span> Issued VIP Passes Directory</div>
+          <div class="card-subtitle">Live real-time sync with Google Sheet</div>
         </div>
         <div style="display: flex; gap: 10px;">
-          <input type="text" id="pass-search" class="form-input" placeholder="Search passes..." style="max-width: 250px; padding: 8px 14px; font-size: 0.85rem;" oninput="filterPassesList()">
+          <input type="text" id="pass-search" class="form-input" placeholder="Search by name, roll no, or pass ID..." style="max-width: 280px; padding: 8px 14px; font-size: 0.85rem;" oninput="filterPassesList()">
         </div>
       </div>
 
@@ -194,17 +279,18 @@
           <thead>
             <tr>
               <th>Pass ID</th>
-              <th>Attendee Name</th>
+              <th>Name</th>
+              <th>Roll No</th>
+              <th>Batch</th>
               <th>Email</th>
-              <th>WhatsApp</th>
               <th>Status</th>
-              <th>Quick Actions</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody id="passes-tbody">
             <tr>
-              <td colspan="6" style="text-align: center; color: var(--text-dim); padding: 24px;">
-                Loading passes...
+              <td colspan="7" style="text-align: center; color: var(--text-dim); padding: 24px;">
+                Loading attendee records...
               </td>
             </tr>
           </tbody>
@@ -224,7 +310,6 @@
     document.addEventListener('DOMContentLoaded', () => {
       renderHeader('generate');
       
-      // Auto-fill saved admin code from config/localStorage
       const savedAdminCode = window.appConfig.get('ADMIN_CODE') || 'FRESHIE2026';
       document.getElementById('admin-code').value = savedAdminCode;
 
@@ -236,6 +321,9 @@
 
       const adminCode = document.getElementById('admin-code').value.trim();
       const name = document.getElementById('attendee-name').value.trim();
+      const rollNo = document.getElementById('attendee-roll').value.trim();
+      const batch = document.getElementById('attendee-batch').value;
+      const category = document.getElementById('attendee-category').value;
       const email = document.getElementById('attendee-email').value.trim();
       const whatsapp = document.getElementById('attendee-whatsapp').value.trim();
       const notes = document.getElementById('attendee-notes').value.trim();
@@ -248,18 +336,24 @@
         showToast('Please enter attendee name.', 'warning');
         return;
       }
+      if (!rollNo) {
+        showToast('Please enter Roll Number.', 'warning');
+        return;
+      }
 
-      // Save Admin Code for user convenience
       window.appConfig.set('ADMIN_CODE', adminCode);
 
       const btn = document.getElementById('btn-submit');
       const originalText = btn.innerHTML;
       btn.disabled = true;
-      btn.innerHTML = '<span>⏳</span> Issuing Pass & Updating Sheet...';
+      btn.innerHTML = '<span>⏳</span> Minting VIP Pass & Syncing Sheet...';
 
       try {
         const res = await window.apiClient.generatePass({
           name,
+          rollNo,
+          batch,
+          category,
           email,
           whatsapp,
           notes
@@ -268,7 +362,7 @@
         if (res && res.success) {
           currentPassData = res;
           displayPassResult(res);
-          showToast(`Pass created for ${name}!`, 'success');
+          showToast(`Pass ${res.passId} created for ${name}!`, 'success');
           loadPassesList();
         } else {
           showToast(res.error || 'Failed to generate pass.', 'error');
@@ -289,6 +383,9 @@
 
       document.getElementById('ticket-pass-id-display').textContent = data.passId;
       document.getElementById('ticket-name-display').textContent = data.name;
+      document.getElementById('ticket-roll-display').textContent = data.rollNo || 'N/A';
+      document.getElementById('ticket-batch-display').textContent = data.batch || 'CSIT';
+      document.getElementById('ticket-category-tag').textContent = data.category || 'Standard Entry';
       document.getElementById('ticket-qr-image').src = data.qrUrl;
 
       // Delivery Status Banner
@@ -299,18 +396,10 @@
         banner.style.display = 'flex';
       } else if (data.whatsapp) {
         banner.className = 'alert alert-info';
-        banner.innerHTML = `<strong>💬 WhatsApp Delivery:</strong> No email provided. Click the WhatsApp button below to send the pass to <code>${escapeHtml(data.whatsapp)}</code>.`;
+        banner.innerHTML = `<strong>💬 WhatsApp Delivery:</strong> Click WhatsApp below to send pass to <code>${escapeHtml(data.whatsapp)}</code>.`;
         banner.style.display = 'flex';
       } else {
         banner.style.display = 'none';
-      }
-
-      const notesEl = document.getElementById('ticket-notes-display');
-      if (data.notes) {
-        notesEl.textContent = data.notes;
-        notesEl.style.display = 'block';
-      } else {
-        notesEl.style.display = 'none';
       }
 
       // WhatsApp Button
@@ -322,7 +411,6 @@
         waBtn.style.display = 'none';
       }
 
-      // Scroll into view on mobile
       if (window.innerWidth < 768) {
         container.scrollIntoView({ behavior: 'smooth' });
       }
@@ -330,6 +418,7 @@
 
     function resetFormForNext() {
       document.getElementById('attendee-name').value = '';
+      document.getElementById('attendee-roll').value = '';
       document.getElementById('attendee-email').value = '';
       document.getElementById('attendee-whatsapp').value = '';
       document.getElementById('attendee-notes').value = '';
@@ -344,97 +433,171 @@
 
     function copyWhatsAppMessage() {
       if (!currentPassData) return;
-      const eventName = window.appConfig.get('EVENT_NAME');
-      const eventDate = window.appConfig.get('EVENT_DATE');
-      const eventVenue = window.appConfig.get('EVENT_VENUE');
+      const presenter = window.appConfig.get('PRESENTER') || 'CSIT JUNIORS PRESENTS';
+      const eventName = window.appConfig.get('EVENT_NAME') || 'The Last Soiree';
+      const eventDate = window.appConfig.get('EVENT_DATE') || '16 MAY 2026';
+      const eventTime = window.appConfig.get('EVENT_TIME') || '07:00 PM ONWARDS';
+      const eventVenue = window.appConfig.get('EVENT_VENUE') || 'Grand Arena';
+      const tagline = window.appConfig.get('EVENT_TAGLINE') || 'AN EVENING OF CELEBRATION | CONNECTION | LEGACY';
 
       const msg = 
-        `🎉 Hello ${currentPassData.name}!\n\n` +
-        `Your entry pass for *${eventName}* is confirmed!\n\n` +
-        `🎫 *Pass ID:* ${currentPassData.passId}\n` +
+        `✨ *${presenter}*\n` +
+        `🌟 *${eventName}*\n\n` +
+        `🎉 *Hello ${currentPassData.name}!*` +
+        (currentPassData.rollNo ? `\n🎓 *Roll No:* \`${currentPassData.rollNo}\`` : '') + `\n` +
+        `🎫 *Pass ID:* \`${currentPassData.passId}\`\n\n` +
         `📅 *Date:* ${eventDate}\n` +
+        `⏰ *Time:* ${eventTime}\n` +
         `📍 *Venue:* ${eventVenue}\n\n` +
-        `⚠️ Important: Please present your QR code pass attached in this chat at the door for entry. Each QR pass is valid for 1 entry only.\n\n` +
-        `See you there! 🚀`;
+        `⚠️ *Important:* Please present your QR code pass attached in this chat at the entrance. Each pass is strictly valid for 1 entry.\n\n` +
+        `✨ _${tagline}_ 🚀`;
 
       navigator.clipboard.writeText(msg);
       showToast('WhatsApp message copied to clipboard!', 'success');
     }
 
-    function downloadTicketImage() {
+    function downloadRoyalTicketImage() {
       if (!currentPassData) return;
       
-      // Draw canvas ticket representation
       const canvas = document.createElement('canvas');
-      canvas.width = 600;
-      canvas.height = 800;
+      canvas.width = 800;
+      canvas.height = 1150;
       const ctx = canvas.getContext('2d');
 
-      // Background
-      ctx.fillStyle = '#0f1322';
-      ctx.fillRect(0, 0, 600, 800);
+      // Background Deep Midnight Gradient
+      const bgGrad = ctx.createRadialGradient(400, 200, 50, 400, 575, 700);
+      bgGrad.addColorStop(0, '#0c1b42');
+      bgGrad.addColorStop(0.5, '#050c20');
+      bgGrad.addColorStop(1, '#02040b');
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, 800, 1150);
 
-      // Top Gradient bar
-      const grad = ctx.createLinearGradient(0, 0, 600, 0);
-      grad.addColorStop(0, '#8b5cf6');
-      grad.addColorStop(0.5, '#ec4899');
-      grad.addColorStop(1, '#f43f5e');
-      ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, 600, 12);
+      // Outer Royal Border
+      ctx.strokeStyle = '#3b82f6';
+      ctx.lineWidth = 4;
+      ctx.strokeRect(30, 30, 740, 1090);
 
-      // Header Text
+      // Inner Filigree Border
+      ctx.strokeStyle = 'rgba(147, 197, 253, 0.4)';
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(42, 42, 716, 1066);
+
+      // Lanyard Hole
       ctx.fillStyle = '#ffffff';
-      ctx.font = 'bold 36px Outfit, sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText('FRESHIE FEST 2026', 300, 70);
+      ctx.beginPath();
+      ctx.arc(400, 75, 14, 0, Math.PI * 2);
+      ctx.fill();
 
-      ctx.fillStyle = '#94a3b8';
-      ctx.font = '18px Outfit, sans-serif';
-      ctx.fillText('Official Entry Pass • 📅 Sat, Oct 24 • 📍 Grand Arena', 300, 105);
+      // CSIT Presenter
+      ctx.fillStyle = '#93c5fd';
+      ctx.font = 'bold 18px Cinzel, serif';
+      ctx.textAlign = 'center';
+      ctx.letterSpacing = '6px';
+      ctx.fillText('CSIT JUNIORS PRESENTS', 400, 130);
+
+      // Main Title "The Last Soiree"
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'italic bold 52px Playfair Display, Georgia, serif';
+      ctx.fillText('The Last Soiree', 400, 195);
+
+      // Subtitle
+      ctx.fillStyle = '#60a5fa';
+      ctx.font = 'bold 20px Cinzel, serif';
+      ctx.fillText('ANNUAL DINNER', 400, 235);
+
+      // Divider Line
+      ctx.strokeStyle = 'rgba(96, 165, 250, 0.6)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(120, 265);
+      ctx.lineTo(680, 265);
+      ctx.stroke();
+
+      // ENTRY PASS Badge
+      ctx.fillStyle = '#cbd5e1';
+      ctx.font = '900 32px Cinzel, serif';
+      ctx.fillText('✦  ENTRY PASS  ✦', 400, 320);
+
+      // Date & Time Box
+      ctx.fillStyle = 'rgba(13, 27, 62, 0.9)';
+      ctx.beginPath();
+      ctx.roundRect(120, 360, 560, 70, 16);
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(147, 197, 253, 0.4)';
+      ctx.stroke();
+
+      ctx.fillStyle = '#93c5fd';
+      ctx.font = 'bold 22px Cinzel, serif';
+      ctx.fillText('📅 16 MAY 2026   |   ⏰ 07:00 PM ONWARDS', 400, 405);
 
       // QR Code Image
       const qrImg = new Image();
       qrImg.crossOrigin = 'Anonymous';
       qrImg.onload = () => {
-        // Draw White Box
+        // White QR Box
         ctx.fillStyle = '#ffffff';
         ctx.beginPath();
-        ctx.roundRect(140, 140, 320, 320, 20);
+        ctx.roundRect(120, 470, 560, 260, 20);
         ctx.fill();
 
-        ctx.drawImage(qrImg, 160, 160, 280, 280);
+        ctx.drawImage(qrImg, 150, 490, 220, 220);
 
-        // Pass ID
-        ctx.fillStyle = '#38bdf8';
-        ctx.font = 'bold 28px monospace';
-        ctx.fillText(currentPassData.passId, 300, 510);
+        // QR Meta
+        ctx.fillStyle = '#1e293b';
+        ctx.font = 'bold 20px Cinzel, serif';
+        ctx.textAlign = 'left';
+        ctx.fillText('SCAN FOR ENTRY', 400, 550);
 
-        // Attendee Name
-        ctx.fillStyle = '#ffffff';
-        ctx.font = 'bold 32px Outfit, sans-serif';
-        ctx.fillText(currentPassData.name, 300, 560);
+        ctx.fillStyle = '#1d4ed8';
+        ctx.font = 'bold 32px monospace';
+        ctx.fillText(currentPassData.passId, 400, 600);
 
-        // Divider Line
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
-        ctx.setLineDash([8, 6]);
+        ctx.fillStyle = '#64748b';
+        ctx.font = '16px Outfit, sans-serif';
+        ctx.fillText(currentPassData.category || 'Standard Entry', 400, 640);
+
+        // Attendee Info Box
+        ctx.fillStyle = 'rgba(13, 27, 62, 0.75)';
         ctx.beginPath();
-        ctx.moveTo(50, 620);
-        ctx.lineTo(550, 620);
+        ctx.roundRect(120, 765, 560, 240, 20);
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(147, 197, 253, 0.3)';
         ctx.stroke();
 
-        // Instructions Footer
-        ctx.setLineDash([]);
-        ctx.fillStyle = '#94a3b8';
-        ctx.font = '16px Outfit, sans-serif';
-        ctx.fillText('⚡ Strictly valid for 1 entry. Present at the entrance door.', 300, 680);
-        ctx.fillText('Organized by Freshie Fest Team', 300, 720);
+        ctx.textAlign = 'left';
+        ctx.fillStyle = '#93c5fd';
+        ctx.font = 'bold 20px Cinzel, serif';
+        ctx.fillText('NAME:', 160, 825);
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 26px Outfit, sans-serif';
+        ctx.fillText(currentPassData.name.toUpperCase(), 340, 825);
 
-        // Download trigger
+        ctx.fillStyle = '#93c5fd';
+        ctx.font = 'bold 20px Cinzel, serif';
+        ctx.fillText('ROLL NO:', 160, 885);
+        ctx.fillStyle = '#93c5fd';
+        ctx.font = 'bold 24px monospace';
+        ctx.fillText(currentPassData.rollNo || 'N/A', 340, 885);
+
+        ctx.fillStyle = '#93c5fd';
+        ctx.font = 'bold 20px Cinzel, serif';
+        ctx.fillText('BATCH:', 160, 945);
+        ctx.fillStyle = '#cbd5e1';
+        ctx.font = '20px Outfit, sans-serif';
+        ctx.fillText(currentPassData.batch || 'CSIT', 340, 945);
+
+        // Footer Tagline
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#60a5fa';
+        ctx.font = '15px Cinzel, serif';
+        ctx.fillText('AN EVENING OF CELEBRATION | CONNECTION | LEGACY', 400, 1055);
+
+        // Trigger Download
         const link = document.createElement('a');
-        link.download = `FreshieFest_Pass_${currentPassData.passId}.png`;
+        link.download = `Pass_${currentPassData.passId.replace('#', '')}_${currentPassData.name.replace(/\s+/g, '_')}.png`;
         link.href = canvas.toDataURL('image/png');
         link.click();
-        showToast('Ticket image downloaded!', 'success');
+        showToast('VIP Pass Poster downloaded!', 'success');
       };
       qrImg.src = currentPassData.qrUrl;
     }
@@ -459,8 +622,8 @@
       if (!passes || passes.length === 0) {
         tbody.innerHTML = `
           <tr>
-            <td colspan="6" style="text-align: center; color: var(--text-dim); padding: 24px;">
-              No passes found. Generate a pass using the form above!
+            <td colspan="7" style="text-align: center; color: var(--text-dim); padding: 24px;">
+              No passes issued yet. Fill in the form above to generate one!
             </td>
           </tr>
         `;
@@ -481,10 +644,11 @@
 
         return `
           <tr>
-            <td style="font-family: var(--font-mono); font-weight: 700; color: #38bdf8;">${escapeHtml(p.passId)}</td>
-            <td style="font-weight: 600;">${escapeHtml(p.name)}</td>
+            <td style="font-family: var(--font-mono); font-weight: 700; color: #93c5fd;">${escapeHtml(p.passId)}</td>
+            <td style="font-weight: 700;">${escapeHtml(p.name)}</td>
+            <td style="font-family: var(--font-mono); color: #60a5fa; font-weight: 600;">${escapeHtml(p.rollNo || '-')}</td>
+            <td style="color: var(--text-muted); font-size: 0.85rem;">${escapeHtml(p.batch || '-')}</td>
             <td style="color: var(--text-muted); font-size: 0.85rem;">${escapeHtml(p.email || '-')}</td>
-            <td style="color: var(--text-muted); font-size: 0.85rem;">${escapeHtml(p.whatsapp || '-')}</td>
             <td><span class="badge ${badgeClass}">${badgeText}</span></td>
             <td>
               <div style="display: flex; gap: 6px;">
@@ -506,8 +670,9 @@
       const filtered = allPasses.filter(p => 
         p.name.toLowerCase().includes(q) || 
         p.passId.toLowerCase().includes(q) || 
-        (p.email && p.email.toLowerCase().includes(q)) ||
-        (p.whatsapp && p.whatsapp.includes(q))
+        (p.rollNo && p.rollNo.toLowerCase().includes(q)) ||
+        (p.batch && p.batch.toLowerCase().includes(q)) ||
+        (p.email && p.email.toLowerCase().includes(q))
       );
       renderPassesTable(filtered);
     }

@@ -1,8 +1,5 @@
 /**
- * Freshie Fest - API Client & Mock Store Layer
- * 
- * Implements CORS-safe communication with Google Apps Script Web App
- * plus an offline Mock Store for immediate local testing and demonstration.
+ * CSIT Event Pass - API Client & Mock Store Layer
  */
 
 class MockBackendStore {
@@ -13,37 +10,32 @@ class MockBackendStore {
 
   init() {
     if (!localStorage.getItem(this.storageKey)) {
-      // Seed sample passes for instant testing
       const seedData = [
         {
-          passId: 'FF-7K9M-2R8Q',
-          name: 'Alex Rivera',
-          email: 'alex.rivera@example.com',
+          passId: '#LSAD26-026',
+          name: 'Aiza Asim',
+          rollNo: '22F-BSCS-026',
+          batch: 'CSIT Juniors',
+          category: 'Standard Entry',
+          email: 'aiza.asim@example.com',
           whatsapp: '+15550192834',
           status: 'unused',
           createdAt: new Date(Date.now() - 3600000 * 24).toISOString(),
           scannedAt: '',
-          notes: 'VIP Pass'
+          notes: 'Table 4'
         },
         {
-          passId: 'FF-3H8P-9W2X',
-          name: 'Samantha Chen',
-          email: 'samantha.c@example.com',
+          passId: '#LSAD26-008',
+          name: 'Hamza Tariq',
+          rollNo: '21F-BSCS-008',
+          batch: 'CSIT Seniors',
+          category: 'VIP Pass',
+          email: 'hamza.t@example.com',
           whatsapp: '+15550183921',
           status: 'used',
           createdAt: new Date(Date.now() - 3600000 * 48).toISOString(),
           scannedAt: new Date(Date.now() - 3600000 * 2).toISOString(),
-          notes: 'Early bird'
-        },
-        {
-          passId: 'FF-4Y2L-8M5N',
-          name: 'Jordan Miller',
-          email: 'jordan.m@example.com',
-          whatsapp: '+15550123456',
-          status: 'unused',
-          createdAt: new Date(Date.now() - 3600000 * 12).toISOString(),
-          scannedAt: '',
-          notes: ''
+          notes: 'Organizing Committee'
         }
       ];
       this.save(seedData);
@@ -77,35 +69,44 @@ class MockBackendStore {
       return { success: false, error: 'Attendee name is required.' };
     }
 
-    const chars = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
-    let p1 = '', p2 = '';
-    for (let i = 0; i < 4; i++) {
-      p1 += chars.charAt(Math.floor(Math.random() * chars.length));
-      p2 += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    const passId = `FF-${p1}-${p2}`;
+    const rollNo = (payload.rollNo || '').trim();
+    const batch = (payload.batch || '').trim();
+    const category = (payload.category || 'Standard Entry').trim();
+
+    const passes = this.load();
+    const count = passes.length + 1;
+    const paddedNum = ('000' + count).slice(-3);
+    const passId = `#LSAD26-${paddedNum}`;
     const nowIso = new Date().toISOString();
     const qrUrl = `https://quickchart.io/qr?text=${encodeURIComponent(passId)}&size=400&ecLevel=H&margin=2`;
 
     const cleanPhone = String(payload.whatsapp || '').replace(/[^0-9]/g, '');
-    const eventName = window.appConfig.get('EVENT_NAME');
-    const eventDate = window.appConfig.get('EVENT_DATE');
-    const eventVenue = window.appConfig.get('EVENT_VENUE');
+    const presenter = window.appConfig.get('PRESENTER') || 'CSIT JUNIORS PRESENTS';
+    const eventName = window.appConfig.get('EVENT_NAME') || 'The Last Soiree';
+    const eventDate = window.appConfig.get('EVENT_DATE') || '16 MAY 2026';
+    const eventTime = window.appConfig.get('EVENT_TIME') || '07:00 PM ONWARDS';
+    const eventVenue = window.appConfig.get('EVENT_VENUE') || 'Grand Arena';
+    const tagline = window.appConfig.get('EVENT_TAGLINE') || 'AN EVENING OF CELEBRATION | CONNECTION | LEGACY';
 
     const message = 
-      `🎉 *Hello ${name}!*\n\n` +
-      `Your entry pass for *${eventName}* is confirmed!\n\n` +
-      `🎫 *Pass ID:* \`${passId}\`\n` +
+      `✨ *${presenter}*\n` +
+      `🌟 *${eventName}*\n\n` +
+      `🎉 *Hello ${name}!*` + (rollNo ? `\n🎓 *Roll No:* \`${rollNo}\`` : '') + `\n` +
+      `🎫 *Pass ID:* \`${passId}\`\n\n` +
       `📅 *Date:* ${eventDate}\n` +
+      `⏰ *Time:* ${eventTime}\n` +
       `📍 *Venue:* ${eventVenue}\n\n` +
       `⚠️ *Important:* Please present your QR code pass at the door for entry. Each QR pass is valid for 1 entry only.\n\n` +
-      `See you there! 🚀`;
+      `✨ _${tagline}_ 🚀`;
 
     const whatsappLink = cleanPhone ? `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}` : '';
 
     const newPass = {
       passId,
       name,
+      rollNo,
+      batch,
+      category,
       email: payload.email || '',
       whatsapp: payload.whatsapp || '',
       status: 'unused',
@@ -116,7 +117,6 @@ class MockBackendStore {
       whatsappLink
     };
 
-    const passes = this.load();
     passes.unshift(newPass);
     this.save(passes);
 
@@ -152,12 +152,13 @@ class MockBackendStore {
         result: 'already_used',
         passId: rawPassId,
         name: pass.name,
+        rollNo: pass.rollNo || '',
+        batch: pass.batch || '',
         scannedAt: pass.scannedAt,
         message: 'This pass has already been used!'
       };
     }
 
-    // Mark as used
     const scanTimeIso = new Date().toISOString();
     pass.status = 'used';
     pass.scannedAt = scanTimeIso;
@@ -168,6 +169,8 @@ class MockBackendStore {
       result: 'valid',
       passId: rawPassId,
       name: pass.name,
+      rollNo: pass.rollNo || '',
+      batch: pass.batch || '',
       scannedAt: scanTimeIso,
       message: `Entry Approved! Welcome ${pass.name}!`
     };
@@ -198,8 +201,9 @@ class MockBackendStore {
     const filtered = stats.recentPasses.filter(item => 
       item.name.toLowerCase().includes(query) ||
       item.passId.toLowerCase().includes(query) ||
-      item.email.toLowerCase().includes(query) ||
-      item.whatsapp.includes(query)
+      (item.rollNo && item.rollNo.toLowerCase().includes(query)) ||
+      (item.email && item.email.toLowerCase().includes(query)) ||
+      (item.whatsapp && String(item.whatsapp).includes(query))
     );
 
     return {
@@ -218,7 +222,6 @@ class ApiClient {
     const isMock = window.appConfig.isMockMode();
 
     if (isMock) {
-      // Simulate realistic network delay of 150-350ms
       await new Promise(r => setTimeout(r, 200));
 
       switch (action) {
@@ -248,10 +251,6 @@ class ApiClient {
     });
 
     try {
-      /**
-       * CRITICAL: Use 'text/plain;charset=utf-8' to prevent the browser from issuing an OPTIONS preflight.
-       * Google Apps Script Web Apps do not handle CORS preflight OPTIONS requests, but do handle standard simple POST requests!
-       */
       const response = await fetch(scriptUrl, {
         method: 'POST',
         headers: {

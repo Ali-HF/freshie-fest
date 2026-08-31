@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Freshie Fest 2026 - Event Pass Hub & Live Check-in</title>
-  <meta name="description" content="Serverless QR Pass Generation and Real-Time Door Scanning for Freshie Fest 2026">
+  <title>The Last Soiree / Welcome Party 2026 - Pass Hub & Check-in</title>
+  <meta name="description" content="CSIT Juniors & Seniors Presents The Last Soiree / Welcome Party 2026 Ticketing & Door Check-in">
   <link rel="stylesheet" href="assets/css/style.css">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✨</text></svg>">
 </head>
 <body>
 
@@ -14,18 +14,18 @@
     <!-- Hero Section -->
     <section class="hero-section">
       <div class="hero-badge">
-        <span>⚡</span> Freshie Fest 2026 Official Ticketing
+        <span>✨</span> CSIT JUNIORS & SENIORS PRESENTS 2026
       </div>
       <h1 class="hero-title">
-        Instant QR Pass System & <span class="gradient-text">Live Door Scanner</span>
+        The Last Soiree & <span class="gradient-royal-text">Welcome Party Portal</span>
       </h1>
       <p class="hero-desc">
-        Lightweight, serverless event ticketing for ~150 attendees powered by Google Sheets. Issue passes with 1-click email & WhatsApp delivery, and scan live at the door with zero app installs.
+        Official serverless entry ticketing and live door scanning system. Issue verified VIP QR passes with instant automated email delivery and validate guest check-ins in real-time.
       </p>
 
       <div class="hero-actions">
         <a href="generate.html" class="btn btn-primary btn-lg">
-          <span>🎫</span> Generate Attendee Pass
+          <span>🎫</span> Generate VIP Pass
         </a>
         <a href="scan.html" class="btn btn-secondary btn-lg">
           <span>📷</span> Open Door Scanner
@@ -40,16 +40,16 @@
     <section style="margin-top: 10px; margin-bottom: 40px;">
       <div class="flex-between" style="margin-bottom: 16px;">
         <h2 style="font-size: 1.25rem; font-weight: 700; display: flex; align-items: center; gap: 8px;">
-          <span>📊</span> Live Event Metrics
+          <span>📊</span> Real-Time Check-in Metrics
         </h2>
         <button class="btn btn-secondary" onclick="fetchLiveStats()" style="padding: 6px 14px; font-size: 0.85rem;">
-          <span>🔄</span> Refresh
+          <span>🔄</span> Refresh Stats
         </button>
       </div>
 
       <div class="stats-grid">
         <div class="stat-card">
-          <div class="stat-icon purple">🎫</div>
+          <div class="stat-icon blue">🎫</div>
           <div>
             <div id="stat-total" class="stat-val">--</div>
             <div class="stat-label">Total Passes Issued</div>
@@ -65,7 +65,7 @@
         </div>
 
         <div class="stat-card">
-          <div class="stat-icon cyan">⏳</div>
+          <div class="stat-icon purple">⏳</div>
           <div>
             <div id="stat-unused" class="stat-val">--</div>
             <div class="stat-label">Pending Arrival</div>
@@ -93,10 +93,10 @@
           <span class="badge badge-info">Admin Code Protected</span>
         </div>
         <ol style="padding-left: 20px; color: var(--text-muted); font-size: 0.95rem; display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px;">
-          <li>Verify attendee's manual bank transfer / screenshot payment.</li>
-          <li>Open the <strong>Pass Generator</strong> and enter their Name, Email, and WhatsApp.</li>
-          <li>Pass is recorded in Google Sheets, QR is automatically emailed, and a pre-filled WhatsApp link is generated.</li>
-          <li>Click the WhatsApp link and attach the generated ticket image to notify the attendee instantly!</li>
+          <li>Confirm attendee's manual payment (bank transfer / screenshot).</li>
+          <li>Open the <strong>Pass Generator</strong> and enter their Name, Roll No, Batch, Email, and WhatsApp.</li>
+          <li>The system generates their unique Pass ID (`#LSAD26-XXX`), writes to Google Sheet, and **automatically emails their QR pass**.</li>
+          <li>Optionally click the WhatsApp deep link to send the pass card on WhatsApp.</li>
         </ol>
         <a href="generate.html" class="btn btn-primary btn-block">
           <span>🚀</span> Open Generator Page
@@ -112,10 +112,10 @@
           <span class="badge badge-success">Zero Login Needed</span>
         </div>
         <ol style="padding-left: 20px; color: var(--text-muted); font-size: 0.95rem; display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px;">
-          <li>Open the <strong>Door Scanner</strong> URL on any smartphone browser (iOS or Android).</li>
-          <li>Allow browser camera permission when prompted.</li>
-          <li>Point camera at the attendee's QR pass (digital on phone or printed).</li>
-          <li>System gives instant audio, haptic, and visual feedback (Valid / Already Used / Invalid) and records timestamps live in Google Sheets.</li>
+          <li>Door staff open the <strong>Door Scanner</strong> URL on their phone browser.</li>
+          <li>Allow camera permission and point at attendee's QR code.</li>
+          <li>Instant audio, haptic, and visual feedback confirms Name, Roll No, and Valid/Used status.</li>
+          <li>Live concurrency locking prevents duplicate entry across multiple doors.</li>
         </ol>
         <a href="scan.html" class="btn btn-secondary btn-block">
           <span>📷</span> Open Scanner Page
@@ -127,11 +127,11 @@
     <section class="card">
       <div class="card-header">
         <div>
-          <div class="card-title"><span>📋</span> Recent Attendee Activity</div>
-          <div class="card-subtitle">Live sync from Google Sheets</div>
+          <div class="card-title"><span>📋</span> Live Attendee Check-in Feed</div>
+          <div class="card-subtitle">Real-time sync from Google Sheets</div>
         </div>
         <div style="display: flex; gap: 10px;">
-          <input type="text" id="table-search" class="form-input" placeholder="Search by name or pass ID..." style="max-width: 250px; padding: 8px 14px; font-size: 0.85rem;" oninput="filterRecentTable()">
+          <input type="text" id="table-search" class="form-input" placeholder="Search by name, roll no, pass ID..." style="max-width: 280px; padding: 8px 14px; font-size: 0.85rem;" oninput="filterRecentTable()">
         </div>
       </div>
 
@@ -141,14 +141,15 @@
             <tr>
               <th>Pass ID</th>
               <th>Attendee Name</th>
+              <th>Roll No</th>
+              <th>Batch</th>
               <th>Status</th>
-              <th>Created At</th>
               <th>Scanned At</th>
             </tr>
           </thead>
           <tbody id="recent-passes-tbody">
             <tr>
-              <td colspan="5" style="text-align: center; color: var(--text-dim); padding: 30px;">
+              <td colspan="6" style="text-align: center; color: var(--text-dim); padding: 30px;">
                 Loading attendee data...
               </td>
             </tr>
@@ -197,7 +198,7 @@
           percentEl.textContent = '0%';
           tbody.innerHTML = `
             <tr>
-              <td colspan="5" style="text-align: center; color: var(--danger); padding: 20px;">
+              <td colspan="6" style="text-align: center; color: var(--danger); padding: 20px;">
                 ${res.error || 'Could not load data. Check API settings.'}
               </td>
             </tr>
@@ -207,7 +208,7 @@
         console.error(err);
         tbody.innerHTML = `
           <tr>
-            <td colspan="5" style="text-align: center; color: var(--danger); padding: 20px;">
+            <td colspan="6" style="text-align: center; color: var(--danger); padding: 20px;">
               Error connecting to API. Click ⚙️ Settings above to configure.
             </td>
           </tr>
@@ -222,8 +223,8 @@
       if (!passes || passes.length === 0) {
         tbody.innerHTML = `
           <tr>
-            <td colspan="5" style="text-align: center; color: var(--text-dim); padding: 30px;">
-              No passes generated yet. Click "Generate Attendee Pass" above to create one!
+            <td colspan="6" style="text-align: center; color: var(--text-dim); padding: 30px;">
+              No passes generated yet. Click "Generate VIP Pass" above to create one!
             </td>
           </tr>
         `;
@@ -233,16 +234,16 @@
       tbody.innerHTML = passes.slice(0, 15).map(p => {
         const isUsed = p.status === 'used';
         const badgeClass = isUsed ? 'badge-success' : 'badge-warning';
-        const badgeText = isUsed ? '✅ Used (Scanned)' : '⏳ Unused';
-        const createdDate = p.createdAt ? new Date(p.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', month: 'short', day: 'numeric' }) : '-';
+        const badgeText = isUsed ? '✅ Scanned (Used)' : '⏳ Pending (Unused)';
         const scannedDate = p.scannedAt ? new Date(p.scannedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', month: 'short', day: 'numeric' }) : '-';
 
         return `
           <tr>
-            <td style="font-family: var(--font-mono); font-weight: 700; color: #38bdf8;">${escapeHtml(p.passId)}</td>
-            <td style="font-weight: 600;">${escapeHtml(p.name)}</td>
+            <td style="font-family: var(--font-mono); font-weight: 700; color: #93c5fd;">${escapeHtml(p.passId)}</td>
+            <td style="font-weight: 700;">${escapeHtml(p.name)}</td>
+            <td style="font-family: var(--font-mono); color: #60a5fa; font-weight: 600;">${escapeHtml(p.rollNo || '-')}</td>
+            <td style="color: var(--text-muted); font-size: 0.85rem;">${escapeHtml(p.batch || '-')}</td>
             <td><span class="badge ${badgeClass}">${badgeText}</span></td>
-            <td style="color: var(--text-dim); font-size: 0.82rem;">${createdDate}</td>
             <td style="color: var(--text-dim); font-size: 0.82rem;">${scannedDate}</td>
           </tr>
         `;
@@ -258,6 +259,8 @@
       const filtered = allRecentPasses.filter(p => 
         p.name.toLowerCase().includes(q) || 
         p.passId.toLowerCase().includes(q) || 
+        (p.rollNo && p.rollNo.toLowerCase().includes(q)) ||
+        (p.batch && p.batch.toLowerCase().includes(q)) ||
         (p.email && p.email.toLowerCase().includes(q))
       );
       renderRecentTable(filtered);

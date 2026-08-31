@@ -66,6 +66,7 @@
         <div id="scan-result-icon" class="scan-icon-circle">✅</div>
         <div id="scan-result-title" class="scan-title">VALID PASS</div>
         <div id="scan-result-name" class="scan-name">Attendee Name</div>
+        <div id="scan-result-roll" class="scan-roll" style="display: none;"></div>
         <div id="scan-result-details" class="scan-details">Entry Approved • 1st Check-in</div>
         
         <div class="scan-reset-bar">
@@ -294,6 +295,8 @@
     function renderScanResult(res, passId) {
       const resultType = res.result || (res.success ? 'valid' : 'invalid');
       const attendeeName = res.name || 'Guest';
+      const rollNo = res.rollNo || '';
+      const batch = res.batch || '';
 
       if (resultType === 'valid') {
         window.soundController.playValid();
@@ -301,9 +304,10 @@
           'valid',
           '✅ ENTRY APPROVED',
           attendeeName,
-          `Pass ID: ${passId} • Checked in just now`
+          rollNo,
+          `Pass: ${passId} • ${batch ? batch + ' • ' : ''}Checked in just now`
         );
-        recordSessionHistory('valid', attendeeName, passId);
+        recordSessionHistory('valid', attendeeName, rollNo, passId);
         startResetCountdown(3500);
 
       } else if (resultType === 'already_used') {
@@ -313,9 +317,10 @@
           'already-used',
           '⚠️ ALREADY SCANNED',
           attendeeName,
-          `Pass ID: ${passId} • First scanned at ${scannedTimeStr}`
+          rollNo,
+          `Pass: ${passId} • 1st Scanned at ${scannedTimeStr}`
         );
-        recordSessionHistory('already-used', attendeeName, passId);
+        recordSessionHistory('already-used', attendeeName, rollNo, passId);
         startResetCountdown(4000);
 
       } else {
@@ -324,18 +329,20 @@
           'invalid',
           '❌ INVALID PASS',
           'Not Found',
+          '',
           `Pass ID "${passId}" does not exist in the database.`
         );
-        recordSessionHistory('invalid', 'Unknown', passId);
+        recordSessionHistory('invalid', 'Unknown', '', passId);
         startResetCountdown(4000);
       }
     }
 
-    function showScanOverlay(type, title, name, details) {
+    function showScanOverlay(type, title, name, rollNo = '', details = '') {
       const overlay = document.getElementById('scan-result-overlay');
       const iconEl = document.getElementById('scan-result-icon');
       const titleEl = document.getElementById('scan-result-title');
       const nameEl = document.getElementById('scan-result-name');
+      const rollEl = document.getElementById('scan-result-roll');
       const detailsEl = document.getElementById('scan-result-details');
 
       overlay.className = `scan-result-modal ${type}`;
@@ -352,8 +359,15 @@
 
       titleEl.textContent = title;
       nameEl.textContent = name;
-      detailsEl.textContent = details;
+      
+      if (rollNo) {
+        rollEl.textContent = `🎓 Roll No: ${rollNo}`;
+        rollEl.style.display = 'block';
+      } else {
+        rollEl.style.display = 'none';
+      }
 
+      detailsEl.textContent = details;
       overlay.style.display = 'flex';
     }
 
@@ -380,12 +394,12 @@
       }, 500);
     }
 
-    function recordSessionHistory(status, name, passId) {
+    function recordSessionHistory(status, name, rollNo = '', passId = '') {
       sessionCount++;
       document.getElementById('session-scan-count').textContent = sessionCount;
 
       const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-      sessionScans.unshift({ status, name, passId, timeStr });
+      sessionScans.unshift({ status, name, rollNo, passId, timeStr });
 
       const listEl = document.getElementById('scan-history-list');
       listEl.innerHTML = sessionScans.slice(0, 10).map(s => {
@@ -402,8 +416,8 @@
         return `
           <div style="background: var(--bg-surface-elevated); padding: 10px 14px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: space-between; font-size: 0.85rem; border: 1px solid var(--border-color);">
             <div>
-              <div style="font-weight: 700; color: #fff;">${escapeHtml(s.name)}</div>
-              <div style="font-family: var(--font-mono); font-size: 0.75rem; color: #38bdf8;">${escapeHtml(s.passId)}</div>
+              <div style="font-weight: 700; color: #fff;">${escapeHtml(s.name)} ${s.rollNo ? `<span style="color:#93c5fd; font-size:0.75rem; font-family:var(--font-mono);">(${escapeHtml(s.rollNo)})</span>` : ''}</div>
+              <div style="font-family: var(--font-mono); font-size: 0.75rem; color: #60a5fa;">${escapeHtml(s.passId)}</div>
             </div>
             <div style="text-align: right;">
               <span class="badge ${badgeClass}">${statusLabel}</span>

@@ -7,10 +7,10 @@ function renderHeader(activePage = 'hub') {
     <header class="header">
       <div class="container nav-wrapper">
         <a href="index.html" class="brand">
-          <div class="brand-icon">⚡</div>
+          <div class="brand-icon">✨</div>
           <div class="brand-text">
-            FRESHIE FEST
-            <span>TICKETING 2026</span>
+            CSIT 2026
+            <span>THE LAST SOIREE</span>
           </div>
         </a>
 
