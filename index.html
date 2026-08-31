@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Event Operations Dashboard - CSIT Annual Gala 2026</title>
-  <meta name="description" content="Operations Dashboard and Live Gate Check-in Management System">
+  <meta name="description" content="Operations Dashboard, Ticket Sales Revenue, and Live Gate Admission Management">
   <link rel="stylesheet" href="assets/css/style.css">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%232563eb%22/><text y=%22.7em%22 x=%22.25em%22 font-size=%2260%22 font-weight=%22bold%22 fill=%22white%22>CS</text></svg>">
 </head>
@@ -20,7 +20,7 @@
         CSIT Annual Gala & Welcome Party 2026
       </h1>
       <p class="hero-desc">
-        Serverless pass issuance and real-time door admission system. Issue digital QR passes with instant automated email confirmation and monitor live gate check-in flow.
+        Serverless pass issuance, revenue tracking, and real-time gate admission system. Monitor ticket sales, issue verified QR passes with automatic email dispatch, and validate guest check-ins.
       </p>
 
       <div class="hero-actions">
@@ -28,7 +28,7 @@
           Pass Generator
         </a>
         <a href="scan.html" class="btn btn-secondary btn-lg">
-          Door Scanner
+          Gate Scanner
         </a>
         <button class="btn btn-secondary btn-lg" onclick="openSettingsModal()">
           API Configuration
@@ -40,7 +40,7 @@
     <section style="margin-bottom: 32px;">
       <div class="flex-between" style="margin-bottom: 14px;">
         <h2 style="font-size: 1.1rem; font-weight: 700; color: var(--text-main);">
-          Gate Check-in Summary
+          Executive Operations Summary
         </h2>
         <button class="btn btn-secondary" onclick="fetchLiveStats()" style="padding: 5px 12px; font-size: 0.8rem;">
           Refresh Data
@@ -48,6 +48,16 @@
       </div>
 
       <div class="stats-grid">
+        <!-- Revenue Card -->
+        <div class="stat-card">
+          <div class="stat-icon green">💵</div>
+          <div>
+            <div id="stat-revenue" class="stat-val" style="color: #10b981;">Rs. 0</div>
+            <div class="stat-label">Total Revenue Collected</div>
+          </div>
+        </div>
+
+        <!-- Total Passes Issued -->
         <div class="stat-card">
           <div class="stat-icon blue">🪪</div>
           <div>
@@ -56,22 +66,16 @@
           </div>
         </div>
 
+        <!-- Checked in Attendees -->
         <div class="stat-card">
-          <div class="stat-icon green">✓</div>
+          <div class="stat-icon blue">✓</div>
           <div>
             <div id="stat-scanned" class="stat-val">--</div>
             <div class="stat-label">Checked-in Attendees</div>
           </div>
         </div>
 
-        <div class="stat-card">
-          <div class="stat-icon slate">⏳</div>
-          <div>
-            <div id="stat-unused" class="stat-val">--</div>
-            <div class="stat-label">Pending Arrival</div>
-          </div>
-        </div>
-
+        <!-- Attendance Rate -->
         <div class="stat-card">
           <div class="stat-icon purple">%</div>
           <div>
@@ -91,10 +95,10 @@
           <span class="badge badge-info">Admin Code Protected</span>
         </div>
         <ol style="padding-left: 18px; color: var(--text-secondary); font-size: 0.88rem; display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
-          <li>Verify attendee's registration and manual payment transfer.</li>
-          <li>Open the <strong>Pass Generator</strong> and record their Name, Roll Number, Batch, and Email.</li>
-          <li>System registers the attendee in Google Sheets and <strong>automatically emails their QR pass</strong>.</li>
-          <li>Optionally trigger WhatsApp message dispatch via pre-filled link.</li>
+          <li>Verify attendee's manual bank transfer / screenshot.</li>
+          <li>Open the <strong>Pass Generator</strong> and record their Name, Roll Number, Amount Paid, and Email.</li>
+          <li>System registers the pass in Google Sheets, updates revenue, and **automatically emails their QR pass**.</li>
+          <li>Optionally dispatch via WhatsApp using the pre-filled link.</li>
         </ol>
         <a href="generate.html" class="btn btn-primary btn-block">
           Open Pass Generator
@@ -108,10 +112,10 @@
           <span class="badge badge-success">No App Install Needed</span>
         </div>
         <ol style="padding-left: 18px; color: var(--text-secondary); font-size: 0.88rem; display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
-          <li>Gate staff access the <strong>Door Scanner</strong> URL on mobile or tablet.</li>
-          <li>Grant browser camera permission and scan attendee's digital/printed QR code.</li>
-          <li>Instant verification validates Pass ID, Name, and Roll Number against the live database.</li>
-          <li>Concurrency locking prevents duplicate entry across multiple gates.</li>
+          <li>Gate staff access the <strong>Gate Scanner</strong> URL on mobile or tablet.</li>
+          <li>Grant browser camera permission and scan attendee's QR code.</li>
+          <li>Instant verification validates Pass ID, Name, and Roll Number against live records.</li>
+          <li>LockService concurrency protection prevents duplicate entry across gates.</li>
         </ol>
         <a href="scan.html" class="btn btn-secondary btn-block">
           Open Gate Scanner
@@ -123,7 +127,7 @@
     <section class="card">
       <div class="card-header">
         <div>
-          <div class="card-title">Live Gate Activity Feed</div>
+          <div class="card-title">Live Attendee Check-in Feed</div>
           <div class="card-subtitle">Real-time synchronized data from Google Sheets</div>
         </div>
         <div>
@@ -138,7 +142,7 @@
               <th>Pass ID</th>
               <th>Attendee Name</th>
               <th>Roll Number</th>
-              <th>Department / Batch</th>
+              <th>Amount Paid</th>
               <th>Status</th>
               <th>Scanned At</th>
             </tr>
@@ -169,9 +173,9 @@
     window.refreshDashboardStats = fetchLiveStats;
 
     async function fetchLiveStats() {
+      const revenueEl = document.getElementById('stat-revenue');
       const totalEl = document.getElementById('stat-total');
       const scannedEl = document.getElementById('stat-scanned');
-      const unusedEl = document.getElementById('stat-unused');
       const percentEl = document.getElementById('stat-percent');
       const tbody = document.getElementById('recent-passes-tbody');
 
@@ -180,17 +184,17 @@
         const res = await window.apiClient.getStats(adminCode);
 
         if (res && res.success) {
+          revenueEl.textContent = `Rs. ${(res.totalRevenue || 0).toLocaleString()}`;
           totalEl.textContent = res.totalPasses;
           scannedEl.textContent = res.scannedPasses;
-          unusedEl.textContent = res.unusedPasses;
           percentEl.textContent = `${res.scannedPercentage}%`;
 
           allRecentPasses = res.recentPasses || [];
           renderRecentTable(allRecentPasses);
         } else {
+          revenueEl.textContent = 'Rs. 0';
           totalEl.textContent = '0';
           scannedEl.textContent = '0';
-          unusedEl.textContent = '0';
           percentEl.textContent = '0%';
           tbody.innerHTML = `
             <tr>
@@ -231,6 +235,7 @@
         const isUsed = p.status === 'used';
         const badgeClass = isUsed ? 'badge-success' : 'badge-warning';
         const badgeText = isUsed ? 'Used' : 'Unused';
+        const amountDisplay = p.amount ? `Rs. ${Number(p.amount).toLocaleString()}` : '-';
         const scannedDate = p.scannedAt ? new Date(p.scannedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', month: 'short', day: 'numeric' }) : '-';
 
         return `
@@ -238,7 +243,7 @@
             <td style="font-family: var(--font-mono); font-weight: 700; color: #38bdf8;">${escapeHtml(p.passId)}</td>
             <td style="font-weight: 600;">${escapeHtml(p.name)}</td>
             <td style="font-family: var(--font-mono); color: var(--text-secondary); font-size: 0.85rem;">${escapeHtml(p.rollNo || '-')}</td>
-            <td style="color: var(--text-muted); font-size: 0.85rem;">${escapeHtml(p.batch || '-')}</td>
+            <td style="font-weight: 600; color: #10b981;">${amountDisplay}</td>
             <td><span class="badge ${badgeClass}">${badgeText}</span></td>
             <td style="color: var(--text-muted); font-size: 0.82rem;">${scannedDate}</td>
           </tr>
@@ -256,7 +261,6 @@
         p.name.toLowerCase().includes(q) || 
         p.passId.toLowerCase().includes(q) || 
         (p.rollNo && p.rollNo.toLowerCase().includes(q)) ||
-        (p.batch && p.batch.toLowerCase().includes(q)) ||
         (p.email && p.email.toLowerCase().includes(q))
       );
       renderRecentTable(filtered);

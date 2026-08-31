@@ -1,5 +1,5 @@
 /**
- * CSIT Event Pass - API Client & Mock Store Layer
+ * CSIT Event Operations - API Client & Offline Mock Store
  */
 
 class MockBackendStore {
@@ -12,30 +12,37 @@ class MockBackendStore {
     if (!localStorage.getItem(this.storageKey)) {
       const seedData = [
         {
-          passId: '#LSAD26-026',
+          passId: '#LSAD26-001',
           name: 'Aiza Asim',
           rollNo: '22F-BSCS-026',
-          batch: 'CSIT Juniors',
-          category: 'Standard Entry',
+          amount: 2500,
           email: 'aiza.asim@example.com',
-          whatsapp: '+15550192834',
+          whatsapp: '+923001234567',
           status: 'unused',
           createdAt: new Date(Date.now() - 3600000 * 24).toISOString(),
-          scannedAt: '',
-          notes: 'Table 4'
+          scannedAt: ''
         },
         {
-          passId: '#LSAD26-008',
+          passId: '#LSAD26-002',
           name: 'Hamza Tariq',
           rollNo: '21F-BSCS-008',
-          batch: 'CSIT Seniors',
-          category: 'VIP Pass',
+          amount: 2500,
           email: 'hamza.t@example.com',
-          whatsapp: '+15550183921',
+          whatsapp: '+923007654321',
           status: 'used',
           createdAt: new Date(Date.now() - 3600000 * 48).toISOString(),
-          scannedAt: new Date(Date.now() - 3600000 * 2).toISOString(),
-          notes: 'Organizing Committee'
+          scannedAt: new Date(Date.now() - 3600000 * 2).toISOString()
+        },
+        {
+          passId: '#LSAD26-003',
+          name: 'Bilal Khan',
+          rollNo: '22F-BSCS-014',
+          amount: 2500,
+          email: 'bilal.k@example.com',
+          whatsapp: '+923009876543',
+          status: 'unused',
+          createdAt: new Date(Date.now() - 3600000 * 12).toISOString(),
+          scannedAt: ''
         }
       ];
       this.save(seedData);
@@ -70,8 +77,7 @@ class MockBackendStore {
     }
 
     const rollNo = (payload.rollNo || '').trim();
-    const batch = (payload.batch || '').trim();
-    const category = (payload.category || 'Standard Entry').trim();
+    const amount = Number(payload.amount) || 0;
 
     const passes = this.load();
     const count = passes.length + 1;
@@ -81,23 +87,24 @@ class MockBackendStore {
     const qrUrl = `https://quickchart.io/qr?text=${encodeURIComponent(passId)}&size=400&ecLevel=H&margin=2`;
 
     const cleanPhone = String(payload.whatsapp || '').replace(/[^0-9]/g, '');
-    const presenter = window.appConfig.get('PRESENTER') || 'CSIT JUNIORS PRESENTS';
-    const eventName = window.appConfig.get('EVENT_NAME') || 'The Last Soiree';
+    const presenter = window.appConfig.get('PRESENTER') || 'CSIT OPERATIONS';
+    const eventName = window.appConfig.get('EVENT_NAME') || 'The Last Soiree 2026';
     const eventDate = window.appConfig.get('EVENT_DATE') || '16 MAY 2026';
     const eventTime = window.appConfig.get('EVENT_TIME') || '07:00 PM ONWARDS';
     const eventVenue = window.appConfig.get('EVENT_VENUE') || 'Grand Arena';
-    const tagline = window.appConfig.get('EVENT_TAGLINE') || 'AN EVENING OF CELEBRATION | CONNECTION | LEGACY';
 
     const message = 
-      `✨ *${presenter}*\n` +
-      `🌟 *${eventName}*\n\n` +
-      `🎉 *Hello ${name}!*` + (rollNo ? `\n🎓 *Roll No:* \`${rollNo}\`` : '') + `\n` +
-      `🎫 *Pass ID:* \`${passId}\`\n\n` +
-      `📅 *Date:* ${eventDate}\n` +
-      `⏰ *Time:* ${eventTime}\n` +
-      `📍 *Venue:* ${eventVenue}\n\n` +
-      `⚠️ *Important:* Please present your QR code pass at the door for entry. Each QR pass is valid for 1 entry only.\n\n` +
-      `✨ _${tagline}_ 🚀`;
+      `*${presenter}*\n` +
+      `*${eventName}*\n\n` +
+      `Hello ${name},\n` +
+      (rollNo ? `Roll No: ${rollNo}\n` : '') +
+      `Pass ID: ${passId}\n` +
+      (amount ? `Amount Paid: Rs. ${amount}\n` : '') +
+      `\n` +
+      `Date: ${eventDate}\n` +
+      `Time: ${eventTime}\n` +
+      `Venue: ${eventVenue}\n\n` +
+      `Please present your QR code credential at the entrance gate. Valid for 1 entry.`;
 
     const whatsappLink = cleanPhone ? `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}` : '';
 
@@ -105,14 +112,12 @@ class MockBackendStore {
       passId,
       name,
       rollNo,
-      batch,
-      category,
+      amount,
       email: payload.email || '',
       whatsapp: payload.whatsapp || '',
       status: 'unused',
       createdAt: nowIso,
       scannedAt: '',
-      notes: payload.notes || '',
       qrUrl,
       whatsappLink
     };
@@ -153,7 +158,7 @@ class MockBackendStore {
         passId: rawPassId,
         name: pass.name,
         rollNo: pass.rollNo || '',
-        batch: pass.batch || '',
+        amount: pass.amount || 0,
         scannedAt: pass.scannedAt,
         message: 'This pass has already been used!'
       };
@@ -170,9 +175,9 @@ class MockBackendStore {
       passId: rawPassId,
       name: pass.name,
       rollNo: pass.rollNo || '',
-      batch: pass.batch || '',
+      amount: pass.amount || 0,
       scannedAt: scanTimeIso,
-      message: `Entry Approved! Welcome ${pass.name}!`
+      message: `Entry Approved: ${pass.name}`
     };
   }
 
@@ -181,6 +186,7 @@ class MockBackendStore {
     const total = passes.length;
     const scanned = passes.filter(p => p.status === 'used').length;
     const unused = total - scanned;
+    const totalRevenue = passes.reduce((acc, p) => acc + (Number(p.amount) || 0), 0);
     const percentage = total > 0 ? Math.round((scanned / total) * 100) : 0;
 
     return {
@@ -188,6 +194,7 @@ class MockBackendStore {
       totalPasses: total,
       scannedPasses: scanned,
       unusedPasses: unused,
+      totalRevenue: totalRevenue,
       scannedPercentage: percentage,
       recentPasses: passes
     };
@@ -222,7 +229,7 @@ class ApiClient {
     const isMock = window.appConfig.isMockMode();
 
     if (isMock) {
-      await new Promise(r => setTimeout(r, 200));
+      await new Promise(r => setTimeout(r, 150));
 
       switch (action) {
         case 'ping':

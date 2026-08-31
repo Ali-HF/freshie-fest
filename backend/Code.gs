@@ -1,28 +1,29 @@
 /**
  * =========================================================================
- * CSIT PRESENTS: THE LAST SOIREE / WELCOME PARTY 2026
- * EVENT QR PASS GENERATION & SCANNING API
+ * CSIT EVENT OPERATIONS - PASS ISSUANCE & GATE ADMISSION API
  * =========================================================================
  * 
- * Google Apps Script Web App acting as a JSON API for Google Sheets.
- * Handles:
- *  1. generatePass: Creates a unique pass, logs in Sheet, sends QR email & returns WhatsApp link.
- *  2. checkAndScanPass: Real-time scan validation with LockService to prevent race conditions.
- *  3. getStats: Summary counts and recent passes for dashboard overview.
- *  4. getPasses: Search and fetch attendee pass list.
+ * Serverless Google Apps Script API connecting to Google Sheets.
+ * 
+ * Features:
+ *  1. generatePass: Creates Pass ID, logs attendee + amount, sends email with QR & returns WhatsApp link.
+ *  2. checkAndScanPass: High-concurrency gate scan validator using LockService.
+ *  3. getStats: Metric aggregations (Total Passes, Scanned, Unused, Total Revenue).
+ *  4. getPasses: Search and filter attendee records.
+ *  5. setupSheet: Revamps and formats Google Sheet with clean corporate headers and auto-column widths.
  */
 
 var CONFIG = {
   DEFAULT_ADMIN_CODE: 'FRESHIE2026',
   SHEET_NAME: 'Attendees',
-  EVENT_NAME: 'The Last Soiree - Annual Dinner',
-  PRESENTER: 'CSIT JUNIORS PRESENTS',
-  EVENT_TAGLINE: 'AN EVENING OF CELEBRATION | CONNECTION | LEGACY',
+  EVENT_NAME: 'The Last Soiree 2026',
+  EVENT_SUBTITLE: 'Annual Dinner & Welcome Gala',
+  PRESENTER: 'CSIT OPERATIONS',
   EVENT_DATE: '16 MAY 2026',
   EVENT_TIME: '07:00 PM ONWARDS',
   EVENT_VENUE: 'Grand Arena, Main Campus',
-  ORGANIZER_NAME: 'CSIT Organizing Team',
-  ORGANIZER_CONTACT: '+1 (555) 019-2834'
+  CURRENCY_SYMBOL: 'Rs. ',
+  ORGANIZER_CONTACT: 'CSIT Organizing Committee'
 };
 
 function doGet(e) {
@@ -33,7 +34,7 @@ function doGet(e) {
     if (action === 'ping') {
       return jsonResponse({
         success: true,
-        message: 'CSIT Event Pass API is online!',
+        message: 'CSIT Event Operations API is active and operational.',
         timestamp: new Date().toISOString()
       });
     }
@@ -44,6 +45,11 @@ function doGet(e) {
         return jsonResponse({ success: false, error: 'Unauthorized: Invalid Admin Code' });
       }
       return jsonResponse(getStatsData());
+    }
+
+    if (action === 'setup') {
+      setupSheet();
+      return jsonResponse({ success: true, message: 'Google Sheet successfully revamped and formatted!' });
     }
 
     return jsonResponse({ success: false, error: 'Unknown GET action' });
@@ -110,19 +116,18 @@ function validateAdminCode(providedCode) {
 }
 
 /**
- * Generates formatted Pass ID matching the theme (e.g. #LSAD26-042 or #CSIT26-042)
+ * Generates formatted Pass ID: #LSAD26-001, #LSAD26-002, etc.
  */
 function generateUniquePassId(sheet) {
-  var count = Math.max(1, sheet.getLastRow());
+  var lastRow = sheet.getLastRow();
+  var count = Math.max(1, lastRow);
   var paddedNum = ('000' + count).slice(-3);
   var candidateId = '#LSAD26-' + paddedNum;
 
-  // Check if exists
   if (!findRowByPassId(sheet, candidateId)) {
     return candidateId;
   }
 
-  // Fallback random suffix
   var randomSuffix = Math.floor(100 + Math.random() * 900);
   return '#LSAD26-' + randomSuffix;
 }
@@ -132,21 +137,22 @@ function getQrCodeUrl(passId) {
   return 'https://quickchart.io/qr?text=' + encodedData + '&size=400&ecLevel=H&margin=2';
 }
 
-function createWhatsAppLink(phoneNumber, name, rollNo, passId) {
+function createWhatsAppLink(phoneNumber, name, rollNo, amount, passId) {
   if (!phoneNumber) return '';
   var cleanPhone = String(phoneNumber).replace(/[^0-9]/g, '');
   
   var message = 
-    '✨ *' + CONFIG.PRESENTER + '*\n' +
-    '🌟 *' + CONFIG.EVENT_NAME + '*\n\n' +
-    '🎉 *Hello ' + name + '!*\n' +
-    (rollNo ? '🎓 *Roll No:* `' + rollNo + '`\n' : '') +
-    '🎫 *Pass ID:* `' + passId + '`\n\n' +
-    '📅 *Date:* ' + CONFIG.EVENT_DATE + '\n' +
-    '⏰ *Time:* ' + CONFIG.EVENT_TIME + '\n' +
-    '📍 *Venue:* ' + CONFIG.EVENT_VENUE + '\n\n' +
-    '⚠️ *Important:* Please present your official QR entry pass attached in this chat at the entrance. Each pass is strictly valid for 1 entry.\n\n' +
-    '✨ _' + CONFIG.EVENT_TAGLINE + '_ 🚀';
+    '*' + CONFIG.PRESENTER + '*\n' +
+    '*' + CONFIG.EVENT_NAME + ' — ' + CONFIG.EVENT_SUBTITLE + '*\n\n' +
+    'Hello ' + name + ',\n' +
+    (rollNo ? 'Roll No: ' + rollNo + '\n' : '') +
+    'Pass ID: ' + passId + '\n' +
+    (amount ? 'Amount Paid: ' + CONFIG.CURRENCY_SYMBOL + amount + '\n' : '') +
+    '\n' +
+    'Date: ' + CONFIG.EVENT_DATE + '\n' +
+    'Time: ' + CONFIG.EVENT_TIME + '\n' +
+    'Venue: ' + CONFIG.EVENT_VENUE + '\n\n' +
+    'Please present your digital QR code pass at the entrance gate. Valid for 1 entry.';
 
   return 'https://wa.me/' + cleanPhone + '?text=' + encodeURIComponent(message);
 }
@@ -162,11 +168,9 @@ function handleGeneratePass(data) {
   }
 
   var rollNo = (data.rollNo || '').trim();
-  var batch = (data.batch || '').trim();
+  var amount = Number(data.amount) || 0;
   var email = (data.email || '').trim();
   var whatsapp = (data.whatsapp || '').trim();
-  var category = (data.category || 'Standard Entry').trim();
-  var notes = (data.notes || '').trim();
 
   var lock = LockService.getScriptLock();
   var hasLock = lock.tryLock(10000);
@@ -180,40 +184,37 @@ function handleGeneratePass(data) {
     var nowIso = new Date().toISOString();
     var qrUrl = getQrCodeUrl(passId);
 
-    // Schema: [Pass ID, Name, Roll No, Batch, Email, WhatsApp, Category, Status, Created Timestamp, Scanned-at Timestamp, Notes]
+    // Schema: [Pass ID, Name, Roll No, Amount, Email, WhatsApp, Status, Created Timestamp, Scanned-at Timestamp]
     sheet.appendRow([
       passId,
       name,
       rollNo,
-      batch,
+      amount,
       email,
       whatsapp,
-      category,
       'unused',
       nowIso,
-      '',
-      notes
+      ''
     ]);
 
     var emailSent = false;
     var emailError = null;
     if (email) {
       try {
-        emailSent = sendPassEmail(name, rollNo, batch, category, email, passId, qrUrl);
+        emailSent = sendPassEmail(name, rollNo, amount, email, passId, qrUrl);
       } catch (e) {
         emailError = e.toString();
       }
     }
 
-    var waLink = createWhatsAppLink(whatsapp, name, rollNo, passId);
+    var waLink = createWhatsAppLink(whatsapp, name, rollNo, amount, passId);
 
     return {
       success: true,
       passId: passId,
       name: name,
       rollNo: rollNo,
-      batch: batch,
-      category: category,
+      amount: amount,
       email: email,
       whatsapp: whatsapp,
       status: 'unused',
@@ -251,19 +252,19 @@ function handleCheckAndScanPass(data) {
         success: true,
         result: 'invalid',
         passId: searchId,
-        message: 'Pass ID not found in system.'
+        message: 'Pass ID not found in system database.'
       };
     }
 
     var rowIdx = match.rowIndex;
     var rowData = match.data;
     
-    // Status is in column index 8 (1-based sheet is 8)
-    var currentStatus = String(rowData[7] || '').toLowerCase().trim();
+    // Status is in column index 7 (0-indexed: 6)
+    var currentStatus = String(rowData[6] || '').toLowerCase().trim();
     var name = rowData[1] || 'Guest';
     var rollNo = rowData[2] || '';
-    var batch = rowData[3] || '';
-    var previousScanTimestamp = rowData[9] || '';
+    var amount = rowData[3] || 0;
+    var previousScanTimestamp = rowData[8] || '';
 
     if (currentStatus === 'used') {
       return {
@@ -272,15 +273,15 @@ function handleCheckAndScanPass(data) {
         passId: searchId,
         name: name,
         rollNo: rollNo,
-        batch: batch,
+        amount: amount,
         scannedAt: previousScanTimestamp,
-        message: 'This pass has already been used!'
+        message: 'Pass has already been used!'
       };
     }
 
     var scanTimeIso = new Date().toISOString();
-    sheet.getRange(rowIdx, 8).setValue('used');
-    sheet.getRange(rowIdx, 10).setValue(scanTimeIso);
+    sheet.getRange(rowIdx, 7).setValue('used');
+    sheet.getRange(rowIdx, 9).setValue(scanTimeIso);
     SpreadsheetApp.flush();
 
     return {
@@ -289,9 +290,9 @@ function handleCheckAndScanPass(data) {
       passId: searchId,
       name: name,
       rollNo: rollNo,
-      batch: batch,
+      amount: amount,
       scannedAt: scanTimeIso,
-      message: 'Entry Approved! Welcome ' + name + '!'
+      message: 'Gate Entry Approved: ' + name
     };
   } finally {
     lock.releaseLock();
@@ -308,6 +309,7 @@ function getStatsData() {
       totalPasses: 0,
       scannedPasses: 0,
       unusedPasses: 0,
+      totalRevenue: 0,
       scannedPercentage: 0,
       recentPasses: []
     };
@@ -316,6 +318,7 @@ function getStatsData() {
   var total = 0;
   var scanned = 0;
   var unused = 0;
+  var totalRevenue = 0;
   var recent = [];
 
   for (var i = 1; i < data.length; i++) {
@@ -324,7 +327,10 @@ function getStatsData() {
     if (!passId) continue;
     
     total++;
-    var status = String(row[7] || '').toLowerCase().trim();
+    var rowAmount = Number(row[3]) || 0;
+    totalRevenue += rowAmount;
+
+    var status = String(row[6] || '').toLowerCase().trim();
     if (status === 'used') {
       scanned++;
     } else {
@@ -335,14 +341,12 @@ function getStatsData() {
       passId: passId,
       name: row[1] || '',
       rollNo: row[2] || '',
-      batch: row[3] || '',
+      amount: rowAmount,
       email: row[4] || '',
       whatsapp: row[5] || '',
-      category: row[6] || '',
       status: status || 'unused',
-      createdAt: row[8] || '',
-      scannedAt: row[9] || '',
-      notes: row[10] || ''
+      createdAt: row[7] || '',
+      scannedAt: row[8] || ''
     });
   }
 
@@ -353,6 +357,7 @@ function getStatsData() {
     totalPasses: total,
     scannedPasses: scanned,
     unusedPasses: unused,
+    totalRevenue: totalRevenue,
     scannedPercentage: total > 0 ? Math.round((scanned / total) * 100) : 0,
     recentPasses: recent.slice(0, 50)
   };
@@ -379,16 +384,17 @@ function handleGetPasses(data) {
     totalPasses: stats.totalPasses,
     scannedPasses: stats.scannedPasses,
     unusedPasses: stats.unusedPasses,
+    totalRevenue: stats.totalRevenue,
     passes: filtered
   };
 }
 
-function sendPassEmail(name, rollNo, batch, category, email, passId, qrUrl) {
+function sendPassEmail(name, rollNo, amount, email, passId, qrUrl) {
   try {
     var qrBlob;
     try {
       var response = UrlFetchApp.fetch(qrUrl);
-      qrBlob = response.getBlob().setName('Pass_' + passId.replace('#', '') + '.png');
+      qrBlob = response.getBlob().setName('Credential_' + passId.replace('#', '') + '.png');
     } catch (fetchErr) {
       Logger.log('Could not fetch QR blob: ' + fetchErr);
     }
@@ -405,7 +411,7 @@ function sendPassEmail(name, rollNo, batch, category, email, passId, qrUrl) {
         '<div style="padding: 24px 24px 16px 24px; border-bottom: 1px solid #1e293b; background: #0b1120;">' +
           '<div style="font-size: 11px; font-weight: 700; letter-spacing: 1px; color: #38bdf8; text-transform: uppercase; margin-bottom: 4px;">' + CONFIG.PRESENTER + '</div>' +
           '<h1 style="margin: 0; color: #ffffff; font-size: 22px; font-weight: 800; letter-spacing: -0.3px;">' + CONFIG.EVENT_NAME + '</h1>' +
-          '<div style="font-size: 13px; color: #94a3b8; margin-top: 2px;">Official Entry Credential & Verification Pass</div>' +
+          '<div style="font-size: 13px; color: #94a3b8; margin-top: 2px;">' + CONFIG.EVENT_SUBTITLE + ' • Official Entry Credential</div>' +
         '</div>' +
 
         '<div style="padding: 24px;">' +
@@ -436,15 +442,11 @@ function sendPassEmail(name, rollNo, batch, category, email, passId, qrUrl) {
                 '<td style="padding: 6px 0; color: #64748b; font-weight: 600;">ROLL NUMBER</td>' +
                 '<td style="padding: 6px 0; color: #38bdf8; font-weight: 700; font-family: monospace; text-align: right;">' + rollNo + '</td>' +
               '</tr>' : '') +
-              (batch ? 
+              (amount ? 
               '<tr>' +
-                '<td style="padding: 6px 0; color: #64748b; font-weight: 600;">BATCH / DEPT</td>' +
-                '<td style="padding: 6px 0; color: #cbd5e1; text-align: right;">' + batch + '</td>' +
+                '<td style="padding: 6px 0; color: #64748b; font-weight: 600;">AMOUNT PAID</td>' +
+                '<td style="padding: 6px 0; color: #10b981; font-weight: 700; text-align: right;">' + CONFIG.CURRENCY_SYMBOL + amount + '</td>' +
               '</tr>' : '') +
-              '<tr>' +
-                '<td style="padding: 6px 0; color: #64748b; font-weight: 600;">CLASSIFICATION</td>' +
-                '<td style="padding: 6px 0; color: #2563eb; font-weight: 600; text-align: right;">' + (category || 'Standard Entry') + '</td>' +
-              '</tr>' +
             '</table>' +
           '</div>' +
 
@@ -495,6 +497,9 @@ function findRowByPassId(sheet, passId) {
   return null;
 }
 
+/**
+ * Revamps the Google Sheet with corporate formatting
+ */
 function getOrCreateSheet() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var sheet = ss.getSheetByName(CONFIG.SHEET_NAME);
@@ -504,34 +509,53 @@ function getOrCreateSheet() {
   }
 
   if (sheet.getLastRow() === 0) {
-    var headers = [
-      'Pass ID',
-      'Name',
-      'Roll No',
-      'Batch',
-      'Email',
-      'WhatsApp',
-      'Category',
-      'Status',
-      'Created Timestamp',
-      'Scanned-at Timestamp',
-      'Notes'
-    ];
-    sheet.appendRow(headers);
-    
-    var headerRange = sheet.getRange(1, 1, 1, headers.length);
-    headerRange.setFontWeight('bold');
-    headerRange.setBackground('#0d1630');
-    headerRange.setFontColor('#93c5fd');
-    sheet.setFrozenRows(1);
+    setupSheetFormatting(sheet);
   }
 
   return sheet;
 }
 
-function initialSetup() {
+function setupSheetFormatting(sheet) {
+  var headers = [
+    'Pass ID',
+    'Name',
+    'Roll No',
+    'Amount Paid',
+    'Email',
+    'WhatsApp',
+    'Status',
+    'Created Timestamp',
+    'Scanned-at Timestamp'
+  ];
+  
+  sheet.clear();
+  sheet.appendRow(headers);
+  
+  var headerRange = sheet.getRange(1, 1, 1, headers.length);
+  headerRange.setFontWeight('bold');
+  headerRange.setBackground('#0f172a');
+  headerRange.setFontColor('#f8fafc');
+  headerRange.setFontFamily('Inter');
+  headerRange.setFontSize(10);
+  sheet.setFrozenRows(1);
+
+  // Set column alignments
+  sheet.getRange('A:A').setHorizontalAlignment('center');
+  sheet.getRange('C:C').setHorizontalAlignment('center');
+  sheet.getRange('D:D').setHorizontalAlignment('right').setNumberFormat('#,##0');
+  sheet.getRange('G:G').setHorizontalAlignment('center');
+
+  // Auto column widths
+  for (var c = 1; c <= headers.length; c++) {
+    sheet.autoResizeColumn(c);
+  }
+}
+
+function setupSheet() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
   var sheet = getOrCreateSheet();
-  SpreadsheetApp.getActiveSpreadsheet().toast('CSIT Event sheet initialized successfully!', 'Setup Complete', 5);
+  setupSheetFormatting(sheet);
+  SpreadsheetApp.getActiveSpreadsheet().toast('Google Sheet revamped with corporate schema and formatting!', 'Setup Complete', 5);
 }
 
 function jsonResponse(data) {
