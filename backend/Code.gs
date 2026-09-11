@@ -179,6 +179,10 @@ function handleGeneratePass(data) {
   var email = (data.email || '').trim();
   var whatsapp = (data.whatsapp || '').trim();
 
+  var passId;
+  var nowIso = new Date().toISOString();
+  var qrUrl;
+
   var lock = LockService.getScriptLock();
   var hasLock = lock.tryLock(10000);
   if (!hasLock) {
@@ -187,9 +191,8 @@ function handleGeneratePass(data) {
 
   try {
     var sheet = getOrCreateSheet();
-    var passId = generateUniquePassId(sheet);
-    var nowIso = new Date().toISOString();
-    var qrUrl = getQrCodeUrl(passId);
+    passId = generateUniquePassId(sheet);
+    qrUrl = getQrCodeUrl(passId);
 
     // Schema: [Pass ID, Name, Roll No, Amount, Email, WhatsApp, Status, Created Timestamp, Scanned-at Timestamp]
     sheet.appendRow([
@@ -207,37 +210,39 @@ function handleGeneratePass(data) {
     // Apply format to new row
     var newRowIdx = sheet.getLastRow();
     formatSingleDataRow(sheet, newRowIdx);
-
-    var emailSent = false;
-    var emailError = null;
-    if (email) {
-      try {
-        emailSent = sendPassEmail(name, rollNo, amount, email, passId, qrUrl);
-      } catch (e) {
-        emailError = e.toString();
-      }
-    }
-
-    var waLink = createWhatsAppLink(whatsapp, name, rollNo, amount, passId);
-
-    return {
-      success: true,
-      passId: passId,
-      name: name,
-      rollNo: rollNo,
-      amount: amount,
-      email: email,
-      whatsapp: whatsapp,
-      status: 'unused',
-      createdAt: nowIso,
-      qrUrl: qrUrl,
-      whatsappLink: waLink,
-      emailSent: emailSent,
-      emailError: emailError
-    };
   } finally {
     lock.releaseLock();
   }
+
+  // Send email asynchronously outside the script lock
+  var emailSent = false;
+  var emailError = null;
+  if (email) {
+    try {
+      emailSent = sendPassEmail(name, rollNo, amount, email, passId, qrUrl);
+    } catch (e) {
+      emailError = e.toString();
+      Logger.log('Email delivery failed: ' + e);
+    }
+  }
+
+  var waLink = createWhatsAppLink(whatsapp, name, rollNo, amount, passId);
+
+  return {
+    success: true,
+    passId: passId,
+    name: name,
+    rollNo: rollNo,
+    amount: amount,
+    email: email,
+    whatsapp: whatsapp,
+    status: 'unused',
+    createdAt: nowIso,
+    qrUrl: qrUrl,
+    whatsappLink: waLink,
+    emailSent: emailSent,
+    emailError: emailError
+  };
 }
 
 function handleCheckAndScanPass(data) {
@@ -404,8 +409,10 @@ function sendPassEmail(name, rollNo, amount, email, passId, qrUrl) {
   try {
     var qrBlob;
     try {
-      var response = UrlFetchApp.fetch(qrUrl);
-      qrBlob = response.getBlob().setName('Credential_' + passId.replace('#', '') + '.png');
+      var response = UrlFetchApp.fetch(qrUrl, { muteHttpExceptions: true });
+      if (response.getResponseCode() === 200) {
+        qrBlob = response.getBlob().setName('Credential_' + passId.replace('#', '') + '.png');
+      }
     } catch (fetchErr) {
       Logger.log('Could not fetch QR blob: ' + fetchErr);
     }
