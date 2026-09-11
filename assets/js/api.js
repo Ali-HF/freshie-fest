@@ -250,6 +250,14 @@ class ApiClient {
       ...payload
     });
 
+    // Check if running on local file:// protocol where Chrome blocks cross-origin fetch
+    if (window.location.protocol === 'file:') {
+      console.warn('Running via file:// protocol. Cross-origin API calls may be blocked by browser CORS restrictions.');
+    }
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 20000);
+
     try {
       const response = await fetch(scriptUrl, {
         method: 'POST',
@@ -257,17 +265,33 @@ class ApiClient {
           'Content-Type': 'text/plain;charset=utf-8'
         },
         body: requestBody,
-        redirect: 'follow'
+        redirect: 'follow',
+        signal: controller.signal
       });
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
+        if (response.status === 404) {
+          throw new Error('HTTP 404: Saved Apps Script Web App URL not found. Please check deployment URL in Settings.');
+        }
+        if (response.status === 403) {
+          throw new Error('HTTP 403: Access forbidden. Make sure "Who has access" is set to "Anyone" in Apps Script Web App deployment.');
+        }
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
       const data = await response.json();
       return data;
     } catch (err) {
+      clearTimeout(timeoutId);
       console.error('API Request Error:', err);
+
+      if (err.name === 'AbortError') {
+        throw new Error('Connection timed out. If running locally from file://, open http://localhost:8080/generate.html or check Apps Script URL.');
+      }
+      if (window.location.protocol === 'file:' && (err.message.includes('Failed to fetch') || err.message.includes('NetworkError'))) {
+        throw new Error('Browser blocked request on file:// protocol. Please open http://localhost:8080/generate.html in your browser.');
+      }
       throw new Error(`Failed to communicate with Google Apps Script: ${err.message}`);
     }
   }
